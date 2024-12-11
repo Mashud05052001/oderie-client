@@ -11,6 +11,7 @@ export type TUser = {
   status: TUserStatus;
   createdAt: string;
   updatedAt: string;
+  Vendor?: TVendor;
 };
 
 export type TLoginResponse = {
@@ -46,4 +47,38 @@ export type TProduct = {
   // Review ? :
   // Order ? :
   // _count ? :
+};
+
+export type TVendor = {
+  id: string;
+  email: string;
+  name: string;
+  phone: string | null;
+  logo: string | null;
+  description: string | null;
+  addresss: string | null;
+  isBlackListed: boolean;
+  createdAt: string;
+  updatedAt: string;
+  User?: TUser;
+  Product?: TProduct[];
+  // VendorResponse ?: TVendorResponse[],
+  // Order ?: TOrder[],
+  // Follow ?: TFollow[]
+};
+
+export type TCoupon = {
+  id: string;
+  code: string;
+  percentage: string;
+  expiryDate: string;
+  vendorId: string;
+  ProductCoupon?: TProductCoupon[];
+};
+
+export type TProductCoupon = {
+  productId: string;
+  couponId: string;
+  Product?: TProduct;
+  Coupon?: TCoupon;
 };

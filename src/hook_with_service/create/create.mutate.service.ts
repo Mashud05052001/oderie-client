@@ -22,3 +22,9 @@ export const updateProductService = catchServiceAsync(
     return res.data as TReturnData<any>;
   }
 );
+export const createCouponService = catchServiceAsync(
+  async (payload: FieldValues) => {
+    const res = await axiosInstance.post(`/coupon`, payload);
+    return res.data as TReturnData<any>;
+  }
+);

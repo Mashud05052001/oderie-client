@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   HistoryOutlined,
   MessageOutlined,
+  PercentageOutlined,
   PicLeftOutlined,
   PlusCircleOutlined,
   ProductOutlined,
@@ -41,6 +42,11 @@ export const vendorSidebarItems: MenuItem[] = [
       <Link href={"/vendor/all-products"}>All Products</Link>,
       "all-products",
       <PicLeftOutlined />
+    ),
+    getItem(
+      <Link href={"/vendor/coupons"}>Coupons</Link>,
+      "coupons",
+      <PercentageOutlined />
     ),
   ]),
   getItem(

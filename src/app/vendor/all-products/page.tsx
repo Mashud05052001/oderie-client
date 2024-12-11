@@ -1,31 +1,20 @@
-// "use client";
-
-// import { useGetAllProducts } from "@/src/hook_with_service/swrGet/product.fetch";
-
-// export default function Page() {
-//
-
-//   return (
-//     <div>
-//       <h1 className="text-2xl"> This is all products Page </h1>
-//     </div>
-//   );
-// }
 "use client";
 import { useDeleteProduct } from "@/src/hook_with_service/delete/delete.mutate.hook";
 import { useGetAllProducts } from "@/src/hook_with_service/swrGet/product.fetch";
 import { CopyOutlined, DeleteFilled, EditFilled } from "@ant-design/icons";
 import { Avatar } from "@nextui-org/avatar";
 import type { TableColumnsType } from "antd";
-import { Pagination, Popover, Slider, Table } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Pagination, Popover, Slider, Table } from "antd";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import useDebounce from "@/src/hook_with_service/useDebounce";
 import { Input } from "@nextui-org/input";
-import ModalContainer from "@/src/components/modal/ModalContainer";
 import { useDuplicateProduct } from "@/src/hook_with_service/create/create.mutate.hook";
 import UpdateProductModal from "@/src/components/modal/modalBody/UpdateProductModal";
 import { TProduct } from "@/src/types/response.type";
+import { TableRowSelection } from "antd/es/table/interface";
+import OdButton from "@/src/components/UI/button/OdButton";
+import CreateCouponModal from "@/src/components/modal/modalBody/CreateCouponModal";
 
 interface DataType {
   key: React.Key;
@@ -37,7 +26,10 @@ interface DataType {
 }
 
 const AllProductsPage = () => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [couponModalOpen, setCouponModalOpen] = useState(false);
   const [editModalData, setEditModalData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [limit, setLimit] = useState(10);
@@ -47,7 +39,6 @@ const AllProductsPage = () => {
   const [range, setRange] = useState<number[] | []>([]);
 
   const debounceValue = useDebounce(searchTerm);
-
   const {
     data: allProducts,
     error,
@@ -60,13 +51,22 @@ const AllProductsPage = () => {
     isSuccess: deleteProductSuccess,
   } = useDeleteProduct();
   const {
+    mutate: mutateCreateCoupon,
+    isLoading: createCouponLoading,
+    isSuccess: createCouponSuccess,
+  } = useDeleteProduct();
+  const {
     mutate: mutateDuplicateProduct,
     isLoading: duplicateProductLoading,
     isSuccess: duplicateProductSuccess,
   } = useDuplicateProduct();
 
   useEffect(() => {
-    if (deleteProductSuccess || duplicateProductSuccess) {
+    if (
+      deleteProductSuccess ||
+      duplicateProductSuccess ||
+      createCouponSuccess
+    ) {
       revalidateProductData();
     }
   }, [
@@ -74,6 +74,8 @@ const AllProductsPage = () => {
     deleteProductSuccess,
     duplicateProductLoading,
     duplicateProductSuccess,
+    createCouponLoading,
+    createCouponSuccess,
   ]);
 
   const columns: TableColumnsType<DataType> = [
@@ -170,34 +172,56 @@ const AllProductsPage = () => {
           key: item.id,
         }))
       : [];
-
   const metaData = allProducts?.data.meta;
+
   useEffect(() => {
     if (!editModalOpen) {
       setEditModalData({});
     }
   }, [editModalOpen]);
 
+  const hasSelected = selectedRowKeys.length > 0;
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">All Products</h1>
-      <div className="mb-6 flex items-end space-x-4">
-        <Input
-          label="Search By"
-          type="text"
-          className="w-48"
-          size="md"
-          variant="underlined"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="mb-6 flex items-end space-x-4 justify-between">
+        <div>
+          <Input
+            label="Search By"
+            type="text"
+            className="w-48"
+            size="md"
+            variant="underlined"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="space-x-2 flex items-center font-semibold">
+          <p>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
+          </p>
+
+          <OdButton
+            onClick={() => setCouponModalOpen(true)}
+            isDisabled={!hasSelected}
+            isLoading={loading}
+            buttonText="Add Coupon"
+            className="text-white bg-[#1c4368] px-4"
+          />
+        </div>
       </div>
       <Table<DataType>
         className={``}
         pagination={false}
         columns={columns}
         dataSource={allProductsData}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (newSelectedRowKeys) =>
+            setSelectedRowKeys(newSelectedRowKeys),
+        }}
         scroll={{ x: "max-content" }}
-        loading={productDataLoading}
+        // loading={productDataLoading}
       />
       <div className="mt-8">
         <Pagination
@@ -218,6 +242,12 @@ const AllProductsPage = () => {
           revalidateProductData={revalidateProductData}
         />
       )}
+      <CreateCouponModal
+        isOpen={couponModalOpen}
+        setIsOpen={setCouponModalOpen}
+        productIds={selectedRowKeys as string[]}
+        setProductIds={setSelectedRowKeys as Dispatch<SetStateAction<string[]>>}
+      />
     </div>
   );
 };
