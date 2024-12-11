@@ -38,6 +38,7 @@
     "antd-style": "^3.7.1",
     "axios": "^1.7.9",
     "clsx": "2.1.1",
+    "dayjs": "^1.11.13",
     "framer-motion": "11.13.1",
     "intl-messageformat": "^10.5.0",
     "jwt-decode": "^4.0.0",
