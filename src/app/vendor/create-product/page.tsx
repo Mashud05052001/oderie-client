@@ -8,7 +8,7 @@ import OdInput from "@/src/components/UI/form/OdInput";
 import OdSelect from "@/src/components/UI/form/OdSelect";
 import OdTextarea from "@/src/components/UI/form/OdTextArea";
 import { useCreateProduct } from "@/src/hook_with_service/create/create.mutate.hook";
-import { useGetAllCategories } from "@/src/hook_with_service/swrGet/category";
+import { useGetAllCategories } from "@/src/hook_with_service/swrGet/category.fetch";
 import { createProductValidationSchem } from "@/src/schema/product.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, SubmitHandler } from "react-hook-form";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetAllCategories } from "@/src/hook_with_service/swrGet/category";
+import { useGetAllCategories } from "@/src/hook_with_service/swrGet/category.fetch";
 import { TProduct } from "@/src/types/response.type";
 import { GetProp, Upload, UploadFile, UploadProps } from "antd";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";

@@ -8,7 +8,10 @@ export const getProducts = async (
   limit: number = 10,
   searchTerm: string = "",
   categoryId: string = "",
-  includes: string = ""
+  includes: string = "",
+  sortBy: string = "",
+  sortOrder: string = "",
+  price: string = ""
 ) => {
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
@@ -19,6 +22,11 @@ export const getProducts = async (
   if (searchTerm) queryParams.append("searchTerm", searchTerm);
   if (categoryId) queryParams.append("categoryId", categoryId);
   if (includes) queryParams.append("includes", includes);
+  if (price) queryParams.append("price", price);
+  if (sortBy && sortOrder) {
+    queryParams.append("sortBy", sortBy);
+    queryParams.append("sortOrder", sortOrder);
+  }
   const url = `/product?${queryParams.toString()}`;
 
   const response = await nexiosInstance.get(url, {
@@ -29,6 +37,7 @@ export const getProducts = async (
   });
 
   const data = response?.data as TSuccessMetaData<TProduct[]>;
+
   return data?.data || { data: [], meta: {} };
 };
 

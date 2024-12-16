@@ -4,23 +4,32 @@ import ProductPagination from "@/src/components/modules/products/ProductPaginati
 import ScrollToTopContainer from "@/src/components/UI/container/ScrollToTopContainer";
 import { getProducts } from "@/src/hook_with_service/product.fetch.service";
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string>;
-}) {
-  const page = Number(searchParams?.page) || 1;
-  const limit = Number(searchParams?.limit) || 15;
-  const searchTerm = searchParams?.searchTerm || "";
-  const categoryId = searchParams?.categoryId || "";
+type TProps = {
+  searchParams: {
+    page?: string | number;
+    limit?: string | number;
+    searchTerm?: string;
+    categoryId?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    price?: string;
+  };
+};
+
+export default async function ProductsPage({ searchParams }: TProps) {
+  const { page, limit, searchTerm, categoryId, sortBy, sortOrder, price } =
+    await searchParams;
+
   const products = await getProducts(
-    page,
-    limit,
-    searchTerm,
-    categoryId,
-    "_count,productCoupon"
+    Number(page) || 1,
+    Number(limit) || 15,
+    searchTerm || "",
+    categoryId || "",
+    "_count,productCoupon",
+    sortBy || "",
+    sortOrder || "",
+    price || ""
   );
-  console.log(products);
 
   return (
     <ScrollToTopContainer>
