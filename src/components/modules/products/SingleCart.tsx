@@ -19,7 +19,7 @@ const SingleCart = ({ product }: { product: TProduct }) => {
       className={`max-w-[250px] space-y-4 rounded-lg bg-white shadow mx-auto`}
     >
       <Link
-        href={`/product/${product.id}`}
+        href={`/products/${product.id}`}
         className="group block bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
       >
         <div className="">

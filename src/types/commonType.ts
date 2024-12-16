@@ -18,6 +18,7 @@ export type TMetaData = {
   page: number;
   limit: number;
 };
+
 export type TReturnData<T> = {
   success: boolean;
   message: string;
