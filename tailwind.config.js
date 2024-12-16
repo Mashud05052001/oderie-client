@@ -16,5 +16,16 @@ module.exports = {
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui({
+    themes: {
+      light: {
+        colors: {
+          success: {
+            foreground: "#fff",
+            DEFAULT: "#ea580c"
+          }
+        }
+      },
+    }
+  })],
 }

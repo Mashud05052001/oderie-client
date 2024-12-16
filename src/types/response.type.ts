@@ -42,11 +42,17 @@ export type TProduct = {
   createdAt: string;
   updatedAt: string;
   Category?: TCategory;
+  ratings: number;
   [key: string]: any;
-  // Vendor ? :
+  Vendor?: TVendor;
+  ProductCoupon?: TProductCoupon[];
   // Review ? :
   // Order ? :
-  // _count ? :
+  _count?: {
+    Review: number;
+    Order: number;
+    ProductCoupon: number;
+  };
 };
 
 export type TVendor = {
@@ -70,7 +76,7 @@ export type TVendor = {
 export type TCoupon = {
   id: string;
   code: string;
-  percentage: string;
+  percentage: number;
   expiryDate: string;
   vendorId: string;
   ProductCoupon?: TProductCoupon[];

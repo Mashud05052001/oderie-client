@@ -1,0 +1,17 @@
+.singleCartContainer {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.singleCartImage {
+  transition: transform 0.2s ease-in-out;
+  background-size: cover;
+  background-position: center;
+}
+
+.singleCartContainer:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.singleCartContainer:hover .singleCartImage {
+  transform: scale(1.15);
+}
