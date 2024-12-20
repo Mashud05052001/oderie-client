@@ -8,6 +8,7 @@ type TProps = {
   variant?: "flat" | "bordered" | "underlined" | "faded";
   size?: "sm" | "md" | "lg";
   defaultValue?: string; // Add defaultValue prop
+  rows?: number;
 };
 
 export default function OdTextarea({
@@ -16,6 +17,7 @@ export default function OdTextarea({
   variant = "underlined",
   size = "md",
   defaultValue = "", // Set a default fallback value
+  rows = 3,
 }: TProps) {
   return (
     <Controller
@@ -33,6 +35,7 @@ export default function OdTextarea({
             size={size}
             label={label}
             variant={variant}
+            minRows={rows}
           />
           {error && (
             <div className="absolute left-1 bottom-[-1.4rem] text-red-500 whitespace-nowrap overflow-hidden text-sm font-medium text-ellipsis">

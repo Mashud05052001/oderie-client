@@ -34,6 +34,7 @@ export type TProduct = {
   title: string;
   description: string;
   price: number;
+  discount: number;
   quantity: number;
   img: string[];
   categoryId: string;
@@ -62,12 +63,21 @@ export type TVendor = {
   phone: string | null;
   logo: string | null;
   description: string | null;
-  addresss: string | null;
+  address: string | null;
+  ratings: number;
+  ratingsCount: number;
   isBlackListed: boolean;
   createdAt: string;
   updatedAt: string;
+
   User?: TUser;
   Product?: TProduct[];
+  _count?: {
+    Follow: number;
+    Order: number;
+    Product: number;
+    VendorResponse: number;
+  };
   // VendorResponse ?: TVendorResponse[],
   // Order ?: TOrder[],
   // Follow ?: TFollow[]

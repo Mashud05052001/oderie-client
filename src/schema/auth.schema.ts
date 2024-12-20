@@ -25,17 +25,23 @@ export const registerValidationSchema = z
     confirmPassword: z
       .string({ required_error: requiredMsg })
       .min(6, { message: "*Confirm your password" }),
-    role: z
-      .enum(["CUSTOMER", "VENDOR"], {
-        required_error: requiredMsg,
-        invalid_type_error: `User role can be either 'CUSTOMER' or 'VENDOR'`,
-        message: "User role can be either 'CUSTOMER' or 'VENDOR'",
-      })
-      .default("CUSTOMER"),
+    role: z.enum(["CUSTOMER", "VENDOR"] as [string, ...string[]], {
+      required_error: requiredMsg,
+      invalid_type_error: `User role can be either 'CUSTOMER' or 'VENDOR'`,
+      message: "User role can be either 'CUSTOMER' or 'VENDOR'",
+    }),
+    img: z.array(z.instanceof(File)).min(1, requiredMsg),
+    phone: z.string({ required_error: requiredMsg }),
+    address: z.string(),
+    description: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "*Passwords doesn't match",
     path: ["confirmPassword"],
+  })
+  .refine((data) => data.role !== "VENDOR" || !!data.description, {
+    message: requiredMsg,
+    path: ["description"],
   });
 
 export const changePasswordValidationSchema = z

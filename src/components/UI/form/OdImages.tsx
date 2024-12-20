@@ -42,7 +42,7 @@ const OdImages = ({
   return (
     <div className="space-y-2 text-sm">
       {label && (
-        <label className="block text-zinc-700 dark:text-zinc-300 font-medium -mb-0.5">
+        <label className="block text-zinc-700 dark:text-zinc-300 font-medium">
           {label}
         </label>
       )}

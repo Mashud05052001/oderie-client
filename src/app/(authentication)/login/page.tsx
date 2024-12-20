@@ -1,5 +1,4 @@
 "use client";
-
 import ForgetPasswordModal from "@/src/components/modal/forgetPasswordModal/ForgetPasswordModal";
 import OdButton from "@/src/components/UI/button/OdButton";
 import CenterContainer from "@/src/components/UI/container/CenterContainer";
@@ -35,7 +34,11 @@ const LoginPage = () => {
     if (isSuccess) {
       setUserLoading(true);
       console.log(loginData);
-      // If role = vendor then redirect to vendor dashboard, if user redirect to home & if admin redirect to admin dashboard
+      /*
+        Customer => Home Page or redirected page
+        Vendor => Vendor Dashboard
+        Admin => Admin Dashboard
+      */
       router.replace(redirect);
     }
   }, [isSuccess, redirect, router, isLoginLoading]);
@@ -56,7 +59,7 @@ const LoginPage = () => {
                 {/* Back to Home Button */}
                 <Link
                   href="/"
-                  className="font-semibold flex text-green-700 hover:text-green-600 duration-100"
+                  className="font-semibold flex text-orange-600 hover:text-orange-700 duration-100"
                 >
                   <FaHome className="size-6 mr-1" />
                   <p className="pt-0.5">Back to Home</p>

@@ -1,5 +1,6 @@
 "use client";
 import { Input } from "@nextui-org/input";
+import { MailIcon } from "lucide-react";
 import { useState } from "react";
 import {
   Controller,
@@ -11,7 +12,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 type TProps = {
   name: string;
   label: string;
-  type: "email" | "password" | "text" | "number";
+  type: "email" | "password" | "text" | "number" | "textEmail";
   variant?: "flat" | "bordered" | "underlined" | "faded";
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -31,6 +32,8 @@ export default function OdInput({
 
   const generateInput = (field: ControllerRenderProps<FieldValues, string>) => {
     const { value, onChange, ...restField } = field;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { onBlur, ...otherRestField } = restField;
     const inputValue = value || "";
 
     if (type === "password") {
@@ -74,11 +77,36 @@ export default function OdInput({
               : e.target.value;
           onChange(updatedValue);
         }}
-        {...restField}
+        onBlur={() => {
+          if (type === "textEmail" && inputValue !== "") {
+            let updatedValue = inputValue;
+            if (updatedValue.includes("@")) {
+              updatedValue = updatedValue.split("@")[0];
+            }
+            onChange(`${updatedValue}@gmail.com`);
+          }
+        }}
+        {...otherRestField}
         size={size}
-        label={label}
+        label={
+          type === "textEmail" ? (
+            <div className="flex items-center">
+              <MailIcon className="size-5 mr-1.5 text-default-400" />
+              {label}
+            </div>
+          ) : (
+            label
+          )
+        }
         variant={variant}
-        type={type}
+        type={type === "textEmail" ? "text" : type}
+        endContent={
+          type === "textEmail" && (
+            <div className="pointer-events-none flex items-center">
+              <span className="text-default-400 text-small">@gmail.com</span>
+            </div>
+          )
+        }
         min={type === "number" ? 0 : undefined} // Only set `min` for number inputs
       />
     );

@@ -1,18 +1,31 @@
-import React from "react";
+import { TCategory } from "@/src/types";
+import Image from "next/image";
 
-const ProductDescription = () => {
+const ProductDescription = ({
+  description,
+  category,
+}: {
+  description: string;
+  category: TCategory;
+}) => {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Product Details</h2>
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <ul className="space-y-2 text-gray-600">
-          <li>• High-quality plastic shuttlecocks with cork base</li>
-          <li>• Pack of 6 pieces</li>
-          <li>• Suitable for recreational and practice use</li>
-          <li>• Green and white color design</li>
-          <li>• Durable and long-lasting</li>
-          <li>• Good flight stability</li>
-        </ul>
+
+      <div className="bg-white pr-6 pb-6 pt-3 rounded-lg shadow-sm">
+        <div className="pb-4 pl-2">
+          <div className="flex items-center">
+            <Image
+              src={category?.icon}
+              alt="Missing"
+              width={60}
+              height={60}
+              className="rounded-full p-1 border-2 mr-2"
+            />
+            <p className="text-lg font-semibold">{category?.name}</p>
+          </div>
+        </div>
+        <section className="pl-6">{description}</section>
       </div>
     </div>
   );

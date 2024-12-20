@@ -1,25 +1,12 @@
+import nexiosInstance from "@/src/lib/nexiosInstance";
+import { TReturnData, TVendor } from "@/src/types";
+import { Award, Clock, LucideProps, MapPin } from "lucide-react";
 import React from "react";
-import {
-  Star,
-  MapPin,
-  Clock,
-  Award,
-  MessageCircle,
-  LucideProps,
-} from "lucide-react";
-
-const vendorStats = {
-  name: "Sports Galaxy BD",
-  rating: 4.8,
-  totalRatings: 1250,
-  positiveRating: 96,
-  shipOnTime: 98,
-  responseRate: 99,
-  joinedDate: "2020",
-  location: "Dhaka, Bangladesh",
-  followers: 5420,
-  products: 328,
-};
+import OdButton from "../../UI/button/OdButton";
+import RatingsIcon from "../../UI/icons/RatingsIcon";
+import { Avatar } from "@nextui-org/avatar";
+import FollowVendor from "../saperateTask/FollowVendor";
+import { getCurrentUser } from "@/src/hook_with_service/auth/auth.mutate.service";
 
 const StatItem = ({
   icon: Icon,
@@ -41,7 +28,30 @@ const StatItem = ({
   </div>
 );
 
-const VendorInformation = () => {
+const VendorInformation = async ({ vendorId }: { vendorId: string }) => {
+  const vendorData = (
+    (await nexiosInstance.get(`/user/vendor/${vendorId}`))
+      .data as TReturnData<TVendor>
+  ).data;
+  const currentLoginUser = await getCurrentUser();
+  let followingData: TReturnData<TVendor | string> = {
+    data: "You are not following the user",
+    message: "Vendor follow data get successfull",
+    success: false,
+  };
+  if (currentLoginUser?.email) {
+    followingData = (
+      await nexiosInstance.get(
+        `/follow/${vendorId}?userEmail=${currentLoginUser.email}`,
+        {
+          next: {
+            tags: ["followUserInfo"],
+          },
+        }
+      )
+    ).data as TReturnData<TVendor | string>;
+  }
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Vendor Information</h2>
@@ -50,38 +60,41 @@ const VendorInformation = () => {
           {/* Vendor Profile */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {vendorStats.name}
-                </h3>
-                <div className="flex items-center mt-1 space-x-2">
-                  <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${i < Math.floor(vendorStats.rating) ? "fill-current" : ""}`}
-                      />
-                    ))}
+              <div className="flex space-x-5 items-center">
+                <Avatar src={vendorData?.logo!} size="lg" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {vendorData?.name}
+                  </h3>
+                  <div className="flex items-center mt-1 space-x-2">
+                    <RatingsIcon rating={vendorData?.ratings ?? 0} />
+                    <span className="text-sm text-gray-500">
+                      {vendorData?.ratings} ({vendorData?.ratingsCount} ratings)
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {vendorStats.rating} ({vendorStats.totalRatings} ratings)
-                  </span>
                 </div>
               </div>
-              <button className="px-4 py-2 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-50">
+              {/* <button className="px-4 py-2 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-50">
                 Follow
-              </button>
+              </button> */}
+              <FollowVendor
+                vendorId={vendorData?.id}
+                followingData={followingData}
+              />
             </div>
 
             <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <span>{vendorStats.products} Products</span>
+              <span> {(vendorData?._count)!.Product} Products</span>
               <span>•</span>
-              <span>{vendorStats.followers} Followers</span>
+              <span> {(vendorData?._count)!.Follow} Followers</span>
             </div>
 
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-600">{vendorStats.location}</span>
+              <span className="text-gray-600">
+                {/* {vendorData?.address} */}
+                asdasd
+              </span>
             </div>
           </div>
 
@@ -90,30 +103,19 @@ const VendorInformation = () => {
             <StatItem
               icon={Award}
               label="Positive Seller Rating"
-              value={`${vendorStats.positiveRating}%`}
+              value={`95%`}
             />
-            <StatItem
-              icon={Clock}
-              label="Ships on Time"
-              value={`${vendorStats.shipOnTime}%`}
-            />
-            <StatItem
-              icon={MessageCircle}
-              label="Chat Response Rate"
-              value={`${vendorStats.responseRate}%`}
-            />
+            <StatItem icon={Clock} label="Ships on Time" value={`99%`} />
           </div>
         </div>
 
         <div className="mt-6 pt-6 border-t">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">
-              <MessageCircle className="w-4 h-4" />
-              <span>Chat Now</span>
-            </button>
-            <button className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-              <span>Visit Store</span>
-            </button>
+            <OdButton
+              buttonText="Visit Store"
+              className="flex items-center justify-center px-4 py-2 border rounded-md w-48"
+              variant="ghost"
+            />
           </div>
         </div>
       </div>

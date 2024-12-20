@@ -1,14 +1,36 @@
 import { TProduct } from "@/src/types";
-import { Rate } from "antd";
-import { Star, Truck, Shield, Package } from "lucide-react";
+import { Truck, Shield, Package } from "lucide-react";
+import AntdRatingsIcon from "../../UI/icons/AntdRatingsIcon";
+import OdButton from "../../UI/button/OdButton";
 
 type TProps = {
   productData: TProduct;
 };
 
 const ProductInfo = ({ productData }: TProps) => {
-  //   const [quantity, setQuantity] = useState(1);
-  const quantity = 10;
+  const productPrice = productData?.price;
+  const productDiscount = productData?.discount;
+  const discountPrice = parseFloat(
+    (productPrice - productPrice * (productDiscount / 100)).toFixed(2)
+  );
+  console.log(productPrice, productData?.discount, discountPrice);
+
+  const companyOffer = (
+    <div className="space-y-3">
+      <div className="flex items-center space-x-3 text-gray-600">
+        <Truck className="w-5 h-5" />
+        <span>Free Shipping</span>
+      </div>
+      <div className="flex items-center space-x-3 text-gray-600">
+        <Shield className="w-5 h-5" />
+        <span>7 Days Return</span>
+      </div>
+      <div className="flex items-center space-x-3 text-gray-600">
+        <Package className="w-5 h-5" />
+        <span>Genuine Product</span>
+      </div>
+    </div>
+  );
   return (
     <div className="space-y-6">
       <div>
@@ -16,65 +38,42 @@ const ProductInfo = ({ productData }: TProps) => {
           {productData?.title}
         </h1>
         <div className="flex items-center mt-2 space-x-2">
-          <div className="flex text-yellow-400">
-            <Rate disabled defaultValue={productData?.ratings || 0} allowHalf />
-          </div>
+          <AntdRatingsIcon rating={productData?.ratings} />
           <span className="text-sm text-gray-500">
             {(productData?._count)!?.Review} Reviews
           </span>
         </div>
       </div>
 
-      <div className="border-t border-b py-4">
-        <div className="text-3xl font-bold text-orange-500">৳149</div>
-        <div className="mt-2 text-sm text-gray-500">
-          <span className="line-through">৳{productData?.price}</span>
-          <span className="ml-2 text-orange-500">25% OFF</span>
-        </div>
-      </div>
+      <div className="border-t border-b py-4 grid-cols-2 grid">
+        <div className="">
+          <div className="text-3xl font-bold text-orange-500">
+            ৳ {discountPrice}
+          </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center space-x-4">
-          <span className="text-gray-700">Quantity:</span>
-          <div className="flex items-center border rounded-md">
-            <p
-              //   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="px-3 py-1 border-r hover:bg-gray-100"
-            >
-              -
-            </p>
-            <span className="px-4 py-1">{quantity}</span>
-            <p
-              //   onClick={() => setQuantity(quantity + 1)}
-              className="px-3 py-1 border-l hover:bg-gray-100"
-            >
-              +
-            </p>
+          {productDiscount !== 0 && (
+            <div className="my-2 text-sm text-gray-500">
+              <span className="line-through">৳{productPrice}</span>
+              <span className="ml-2 text-orange-500">
+                {productDiscount}% OFF
+              </span>
+            </div>
+          )}
+
+          <div className={`${productDiscount === 0 && "mt-4 -mb-4"}`}>
+            {productData?.quantity < 100 && "Only "}
+            <strong className="mr-1.5 text-orange-600">
+              {productData?.quantity}
+            </strong>
+            in stock
           </div>
         </div>
-
-        <button className="w-full bg-orange-500 text-white py-3 rounded-md hover:bg-orange-600 transition-colors">
-          Add to Cart
-        </button>
-        <button className="w-full border border-orange-500 text-orange-500 py-3 rounded-md hover:bg-orange-50 transition-colors">
-          Buy Now
-        </button>
+        <div className="md:hidden ml-10">{companyOffer}</div>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center space-x-3 text-gray-600">
-          <Truck className="w-5 h-5" />
-          <span>Free Shipping</span>
-        </div>
-        <div className="flex items-center space-x-3 text-gray-600">
-          <Shield className="w-5 h-5" />
-          <span>7 Days Return</span>
-        </div>
-        <div className="flex items-center space-x-3 text-gray-600">
-          <Package className="w-5 h-5" />
-          <span>Genuine Product</span>
-        </div>
-      </div>
+      <OdButton buttonText="Add to Cart" className="font-medium" />
+
+      <div className="hidden md:block">{companyOffer}</div>
     </div>
   );
 };
