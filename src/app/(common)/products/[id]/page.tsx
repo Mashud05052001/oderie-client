@@ -4,6 +4,8 @@ import ProductInfo from "@/src/components/modules/singleProduct/ProductInfo";
 import ProductReviews from "@/src/components/modules/singleProduct/ProductReviews";
 import SimilarProducts from "@/src/components/modules/singleProduct/SimilarProducts";
 import VendorInformation from "@/src/components/modules/singleProduct/VendorInformation";
+import ProductReviewSkeleton from "@/src/components/shared/skeleton/ProductReviewSkeleton";
+import SimilarProductSkeleton from "@/src/components/shared/skeleton/SimilarProductSkeleton";
 import VendorInformationOnSingleProductSkeleton from "@/src/components/shared/skeleton/VendorInformationOnSingleProductSkeleton";
 import { getSingleProduct } from "@/src/hook_with_service/product.fetch.service";
 import { Suspense } from "react";
@@ -14,7 +16,10 @@ type TProps = {
 
 export default async function SingleProductPage({ params }: TProps) {
   const { id: productId } = await params;
-  const productData = await getSingleProduct(productId);
+  const productData = await getSingleProduct(productId, {
+    _count: true,
+    Category: true,
+  });
 
   return (
     <div>
@@ -30,8 +35,15 @@ export default async function SingleProductPage({ params }: TProps) {
         <Suspense fallback={<VendorInformationOnSingleProductSkeleton />}>
           <VendorInformation vendorId={productData.vendorId} />
         </Suspense>
-        <ProductReviews />
-        <SimilarProducts />
+        <Suspense fallback={<ProductReviewSkeleton />}>
+          <ProductReviews productId={productData?.id} />
+        </Suspense>
+        <Suspense fallback={<SimilarProductSkeleton cartItem={6} />}>
+          <SimilarProducts
+            categoryId={productData?.categoryId}
+            currentProductId={productData?.id}
+          />
+        </Suspense>
       </main>
     </div>
   );

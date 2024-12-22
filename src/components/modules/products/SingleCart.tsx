@@ -1,18 +1,16 @@
-import { TCoupon, TProduct } from "@/src/types/response.type";
+import { TProduct } from "@/src/types/response.type";
 import { Rate } from "antd";
 import Image from "next/image";
 import Link from "next/link";
+import PriceOrganize from "../../shared/smallComponents/PriceOrganize";
+import RatingsIcon from "../../UI/icons/RatingsIcon";
 
 const SingleCart = ({ product }: { product: TProduct }) => {
-  const maxCoupon =
-    product?.ProductCoupon?.reduce((max, item) => {
-      const percentage = item?.Coupon?.percentage ?? -Infinity;
-      return percentage > max ? percentage : max;
-    }, 0) || 0;
-  const discountPrice =
-    maxCoupon !== 0
-      ? ((product?.price * (100 - maxCoupon)) / 100).toFixed(2)
-      : product?.price;
+  const productPrice = product?.price;
+  const productDiscount = product?.discount;
+  const discountPrice = parseFloat(
+    (productPrice - productPrice * (productDiscount / 100)).toFixed(2)
+  );
 
   return (
     <div
@@ -40,30 +38,39 @@ const SingleCart = ({ product }: { product: TProduct }) => {
         </div>
 
         <div className="p-4">
-          <h3 className="text-sm tracking-tight font-medium text-gray-900 transition-colors line-clamp-2">
+          <h3 className="text-base tracking-tight font-medium text-gray-900 transition-colors line-clamp-2">
             {product.title}
           </h3>
           {/* Price */}
-          <div className="mt-2 flex items-center justify-between text-sm">
-            <p className={`font-semibold `}>
-              <span className="text-orange-600 text-base">
+          <div className="mt-2 flex items-center justify-between">
+            <div className={`font-semibold `}>
+              <span className="text-orange-600 text-lg">
                 ট:&nbsp;
-                <span>
-                  {discountPrice.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
+                <PriceOrganize price={discountPrice} />
               </span>
-              {maxCoupon !== 0 && (
+              {/* {maxCoupon !== 0 && (
                 <span className="ml-1 text-xs">(-{maxCoupon}%)</span>
+              )} */}
+              {productDiscount !== 0 && (
+                <div className="my-2 text-xs text-gray-500">
+                  <span className="line-through">
+                    ৳
+                    <PriceOrganize price={discountPrice} />
+                  </span>
+                  <span className="ml-1 text-orange-500">
+                    {productDiscount}% OFF
+                  </span>
+                </div>
               )}
-            </p>
+            </div>
           </div>
           {/* Ratings */}
-          <div className="mt-2">
-            <Rate disabled defaultValue={product?.ratings || 0} allowHalf />
-            <span className="text-sm ml-2">
-              (<span className="font-medium">{(product?._count)!.Review}</span>)
+          <div className="mt-2 flex items-center gap-x-2 text-sm">
+            {/* <Rate disabled defaultValue={product?.ratings || 0} allowHalf /> */}
+            <RatingsIcon rating={product?.ratings} />
+            <span>
+              (<span className="font-medium">{(product?._count)!?.Review}</span>
+              )
             </span>
           </div>
         </div>

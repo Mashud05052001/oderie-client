@@ -42,3 +42,11 @@ export type TError = {
   }[];
   stack?: string;
 };
+
+export type TOdCartData = {
+  vendorId: string;
+  products: {
+    productId: string;
+    quantity: number;
+  }[];
+};

@@ -19,6 +19,10 @@ export const createProductValidationSchem = z.object({
     })
     .positive("Price must be a positive number")
     .nonnegative("Quantity cannot be negative"),
+  discount: z
+    .number()
+    .positive("Discount must be a positive number")
+    .max(100, "Discount must be less then 100"),
   quantity: z
     .number({
       required_error: requiredMsg,

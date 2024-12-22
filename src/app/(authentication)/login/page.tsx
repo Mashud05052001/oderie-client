@@ -28,7 +28,10 @@ const LoginPage = () => {
     error,
     data: loginData,
   } = useUserLogin();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => mutateLogin(data);
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    console.log(data);
+    mutateLogin(data);
+  };
 
   useEffect(() => {
     if (isSuccess) {

@@ -7,6 +7,7 @@ import RatingsIcon from "../../UI/icons/RatingsIcon";
 import { Avatar } from "@nextui-org/avatar";
 import FollowVendor from "../saperateTask/FollowVendor";
 import { getCurrentUser } from "@/src/hook_with_service/auth/auth.mutate.service";
+import makeDelay from "@/src/utils/makeDelay";
 
 const StatItem = ({
   icon: Icon,

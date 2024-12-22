@@ -20,16 +20,16 @@ export default async function ProductsPage({ searchParams }: TProps) {
   const { page, limit, searchTerm, categoryId, sortBy, sortOrder, price } =
     await searchParams;
 
-  const products = await getProducts(
-    Number(page) || 1,
-    Number(limit) || 15,
-    searchTerm || "",
-    categoryId || "",
-    "_count,productCoupon",
-    sortBy || "",
-    sortOrder || "",
-    price || ""
-  );
+  const products = await getProducts({
+    page: Number(page) || 1,
+    limit: Number(limit) || 15,
+    searchTerm: searchTerm || "",
+    categoryId: categoryId || "",
+    includes: "_count,productCoupon",
+    sortBy: sortBy || "",
+    sortOrder: sortOrder || "",
+    price: price || "",
+  });
 
   return (
     <ScrollToTopContainer>

@@ -1,7 +1,8 @@
 import { TProduct } from "@/src/types";
-import { Truck, Shield, Package } from "lucide-react";
-import AntdRatingsIcon from "../../UI/icons/AntdRatingsIcon";
-import OdButton from "../../UI/button/OdButton";
+import { Package, Shield, Truck } from "lucide-react";
+import RatingsIcon from "../../UI/icons/RatingsIcon";
+import PriceOrganize from "../../shared/smallComponents/PriceOrganize";
+import ProductAddToCart from "./ProductAddToCart";
 
 type TProps = {
   productData: TProduct;
@@ -13,8 +14,6 @@ const ProductInfo = ({ productData }: TProps) => {
   const discountPrice = parseFloat(
     (productPrice - productPrice * (productDiscount / 100)).toFixed(2)
   );
-  console.log(productPrice, productData?.discount, discountPrice);
-
   const companyOffer = (
     <div className="space-y-3">
       <div className="flex items-center space-x-3 text-gray-600">
@@ -38,7 +37,7 @@ const ProductInfo = ({ productData }: TProps) => {
           {productData?.title}
         </h1>
         <div className="flex items-center mt-2 space-x-2">
-          <AntdRatingsIcon rating={productData?.ratings} />
+          <RatingsIcon rating={productData?.ratings} />
           <span className="text-sm text-gray-500">
             {(productData?._count)!?.Review} Reviews
           </span>
@@ -48,12 +47,15 @@ const ProductInfo = ({ productData }: TProps) => {
       <div className="border-t border-b py-4 grid-cols-2 grid">
         <div className="">
           <div className="text-3xl font-bold text-orange-500">
-            ৳ {discountPrice}
+            ৳ <PriceOrganize price={discountPrice} />
           </div>
 
           {productDiscount !== 0 && (
             <div className="my-2 text-sm text-gray-500">
-              <span className="line-through">৳{productPrice}</span>
+              <span className="line-through">
+                ৳
+                <PriceOrganize price={discountPrice} />
+              </span>
               <span className="ml-2 text-orange-500">
                 {productDiscount}% OFF
               </span>
@@ -71,7 +73,7 @@ const ProductInfo = ({ productData }: TProps) => {
         <div className="md:hidden ml-10">{companyOffer}</div>
       </div>
 
-      <OdButton buttonText="Add to Cart" className="font-medium" />
+      <ProductAddToCart productData={productData} />
 
       <div className="hidden md:block">{companyOffer}</div>
     </div>

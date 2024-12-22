@@ -33,7 +33,8 @@ export default function Page() {
     for (const picture of pictures) {
       formData.append("files", picture);
     }
-    mutateCreateProduct(formData);
+    console.log(data);
+    // mutateCreateProduct(formData);
   };
   return (
     <div>
@@ -43,8 +44,10 @@ export default function Page() {
         className="max-w-4xl"
       >
         <h1 className="text-2xl mb-6 font-medium"> Create Product</h1>
-        <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
-          <OdInput label="Title" name="title" type="text" />
+        <div className="grid md:grid-cols-3 gap-x-12 gap-y-2 sm:gap-y-5 md:gap-y-8">
+          <div className="md:col-span-2">
+            <OdInput label="Title" name="title" type="text" />
+          </div>
           <OdSelect
             label="Category"
             name="categoryId"
@@ -53,6 +56,8 @@ export default function Page() {
           />
           <OdInput label="Price" name="price" type="number" />
           <OdInput label="Quantity" name="quantity" type="number" />
+          <OdInput label="Discount" name="discount" type="number" />
+
           {/* <OdTextEditor label="Description" name="description" /> */}
           <div className="md:col-span-2 space-y-8">
             <OdTextarea label="Description" name="description" />

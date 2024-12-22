@@ -12,6 +12,21 @@ export type TUser = {
   createdAt: string;
   updatedAt: string;
   Vendor?: TVendor;
+  Profile?: TProfile;
+};
+
+export type TProfile = {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  address: string;
+  img: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+
+  User?: TUser;
 };
 
 export type TLoginResponse = {
@@ -97,4 +112,89 @@ export type TProductCoupon = {
   couponId: string;
   Product?: TProduct;
   Coupon?: TCoupon;
+};
+
+export type TReview = {
+  id: string;
+  productImg: string;
+  message: string;
+  ratings: number;
+  orderId: string;
+  productId: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+
+  // Relations
+  Product?: TProduct;
+  User?: TUser;
+  Order?: TOrder;
+  VendorResponse?: TVendorResponse | null;
+};
+
+export type TVendorResponse = {
+  id: string;
+  message: string;
+  reviewId: string;
+  vendorId: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  Review?: TReview;
+  Vendor?: TVendor;
+};
+
+export type TOrder = {
+  id: string;
+  userId: string;
+  vendorId: string;
+  status: TOrderStatus;
+  totalPrice: number;
+  paymentStatus: TPaymentStatus;
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  User?: TUser;
+  Vendor?: TVendor;
+  Payment?: TPayment | null;
+  OrderItem?: TOrderItem[];
+  Review?: TReview[];
+};
+
+export type TPayment = {
+  id: string;
+  transactionId: string;
+  amount: number;
+  orderId: string;
+  gatewayData: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Relation
+  Order?: TOrder;
+};
+
+export type TOrderItem = {
+  id: string;
+  productId: string;
+  orderId: string;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Relations
+  Product?: TProduct;
+  Order?: TOrder;
+};
+
+export type TOrderCheckout = {
+  order: TOrder;
+  paymentData: {
+    data: string;
+    transactionId: string;
+  };
 };
