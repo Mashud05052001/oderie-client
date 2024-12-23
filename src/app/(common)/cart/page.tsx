@@ -38,7 +38,6 @@ import { toast } from "sonner";
 import ModalContainer from "@/src/components/modal/ModalContainer";
 import moment from "moment";
 import { roundFigureNumber } from "@/src/utils/roundFigureNumber";
-import FullPageGlassLoading from "@/src/components/shared/loading/FullPageGlassLoading";
 import { useRouter } from "next/navigation";
 
 type TSelectedCartItems = {

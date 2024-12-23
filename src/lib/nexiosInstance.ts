@@ -16,7 +16,7 @@ const defaultConfig: NexiosOptions = {
 const nexiosInstance = new Nexios(defaultConfig);
 
 nexiosInstance.interceptors.request.use(async (config) => {
-  const accessToken = getAccessToken();
+  const accessToken = await getAccessToken();
   if (accessToken) {
     config.headers = {
       ...config.headers,

@@ -1,4 +1,5 @@
 const envConfig = {
+  nodeEnv: process.env.NEXT_PUBLIC_NODE_ENV,
   noProfilePic: process.env.NEXT_PUBLIC_NO_PROFILE_PICTURE,
   superAdminEmail: process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL,
   baseAPI: process.env.NEXT_PUBLIC_BASE_API,

@@ -13,6 +13,14 @@ export type TUser = {
   updatedAt: string;
   Vendor?: TVendor;
   Profile?: TProfile;
+  Follow?: TFollow[];
+  Review?: TReview[];
+  Order?: TOrder[];
+  _count?: {
+    Review: number;
+    Order: number;
+    Follow: number;
+  };
 };
 
 export type TProfile = {
@@ -197,4 +205,13 @@ export type TOrderCheckout = {
     data: string;
     transactionId: string;
   };
+};
+
+export type TFollow = {
+  userId: string;
+  vendorId: string;
+  User?: TUser;
+  Vendor?: TVendor;
+  createdAt: string;
+  updatedAt: string;
 };
