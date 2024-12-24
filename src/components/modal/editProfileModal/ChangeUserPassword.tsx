@@ -39,7 +39,7 @@ export default function ChangeUserPassword() {
       setIsOpen={setModalOpen}
       title="Change Password"
       placement="top"
-      size="xl"
+      size="lg"
     >
       <OdForm
         onSubmit={onSubmit}

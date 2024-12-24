@@ -5,6 +5,7 @@ import {
   CircleUserRound,
   History,
   LayoutGrid,
+  MessageSquareDot,
   MessageSquareIcon,
   Package,
   ShoppingBag,
@@ -76,11 +77,18 @@ export const userSidebarItems: MenuItem[] = [
     "orders",
     <ShoppingBag size={22} />
   ),
-  getItem(
-    <Link href={`/dashboard/reviews`}>Reviews</Link>,
-    "reviews",
-    <MessageSquareIcon size={22} />
-  ),
+  getItem("Reviews", "product", <MessageSquareIcon size={22} />, [
+    getItem(
+      <Link href={"/dashboard/create-review"}>Pending Review</Link>,
+      "products",
+      <BadgePlus size={20} />
+    ),
+    getItem(
+      <Link href={"/dashboard/my-reviews"}>My Reviews</Link>,
+      "reviews",
+      <MessageSquareDot size={20} />
+    ),
+  ]),
 ];
 
 export const adminSidebarItems: MenuItem[] = [

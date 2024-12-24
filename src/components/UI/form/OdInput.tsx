@@ -17,6 +17,8 @@ type TProps = {
   size?: "sm" | "md" | "lg";
   className?: string;
   defaultValue?: string | number; // Add defaultValue prop
+  min?: number;
+  max?: number;
 };
 
 export default function OdInput({
@@ -26,7 +28,9 @@ export default function OdInput({
   variant = "underlined",
   size = "md",
   className,
-  defaultValue = "", // Set a default value if none is provided
+  defaultValue = "", // Set a default value if none is provided,
+  max,
+  min = 0,
 }: TProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -107,7 +111,8 @@ export default function OdInput({
             </div>
           )
         }
-        min={type === "number" ? 0 : undefined} // Only set `min` for number inputs
+        min={type === "number" ? min : undefined}
+        max={type === "number" && max ? max : undefined}
       />
     );
   };

@@ -171,6 +171,10 @@ export type TOrder = {
   Payment?: TPayment | null;
   OrderItem?: TOrderItem[];
   Review?: TReview[];
+  _count?: {
+    OrderItem: number;
+    Review: number;
+  };
 };
 
 export type TPayment = {

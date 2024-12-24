@@ -75,7 +75,6 @@ export default function EditUserProfile({ userData }: { userData: TUser }) {
       title="Edit Profile"
       placement="top"
       size="xl"
-      outsideClickToCloseModal={false}
     >
       <OdForm onSubmit={onSubmit} className="space-y-4">
         <OdInput

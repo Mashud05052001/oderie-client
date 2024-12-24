@@ -32,3 +32,12 @@ export const createProductValidationSchem = z.object({
     .array(z.instanceof(File))
     .min(1, "At least a picture is required"),
 });
+
+export const createReviewValidationSchema = z.object({
+  message: z.string({ required_error: requiredMsg }),
+  ratings: z
+    .number({ required_error: requiredMsg, invalid_type_error: requiredMsg })
+    .min(1)
+    .max(5),
+  img: z.array(z.instanceof(File)).optional(),
+});

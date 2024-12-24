@@ -16,10 +16,14 @@ type TProps = {
 
 export default async function SingleProductPage({ params }: TProps) {
   const { id: productId } = await params;
+  console.log(productId);
   const productData = await getSingleProduct(productId, {
     _count: true,
     Category: true,
   });
+  if (!productData) {
+    return <p>Something went wrong!</p>;
+  }
 
   return (
     <div>

@@ -1,17 +1,12 @@
+import ChangeUserPassword from "@/src/components/modal/editProfileModal/ChangeUserPassword";
 import EditUserProfile from "@/src/components/modal/editProfileModal/EditUserProfile";
 import UserFollowingsModal from "@/src/components/modal/followingsFollowers/UserFollowingsModal";
 import { TUser } from "@/src/types";
 import { Avatar } from "@nextui-org/avatar";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { headers } from "next/headers";
 import { RoleBadge } from "./RoleBadge";
-import ChangeUserPassword from "@/src/components/modal/editProfileModal/ChangeUserPassword";
 
 export async function UserProfile({ userData }: { userData: TUser }) {
-  const headersList = await headers();
-  const currentUrl = headersList.get("referer");
-  const edithref = currentUrl?.split("/")[currentUrl?.split("/")?.length - 2]!;
-
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
       <div className="relative">
