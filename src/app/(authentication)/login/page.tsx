@@ -54,7 +54,7 @@ const LoginPage = () => {
             onSubmit={onSubmit}
             resolver={zodResolver(loginValidationSchema)}
           >
-            <div className="space-y-6">
+            <div className="space-y-6 relative ">
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-semibold tracking-tight text-common-700 dark:text-common-300">
                   Login
@@ -74,7 +74,7 @@ const LoginPage = () => {
               </div>
               {/* Error Message & Forget Password */}
               {error && (
-                <div className="flex justify-between text-xs pt-3">
+                <div className="flex justify-between text-xs pt-3 absolute bottom-[6.5rem]">
                   {error ? (
                     <p className="text-red-600 font-medium ml-1">
                       {error?.message}

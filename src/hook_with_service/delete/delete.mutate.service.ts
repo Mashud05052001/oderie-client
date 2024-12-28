@@ -9,3 +9,17 @@ export const deleteProductService = catchServiceAsync(
     return res.data as TReturnData<any>;
   }
 );
+
+export const deleteCouponProductService = catchServiceAsync(
+  async (payload: { productId: string; couponId: string }) => {
+    const res = await axiosInstance.patch(`/coupon/product`, payload);
+    return res.data as TReturnData<any>;
+  }
+);
+
+export const deleteCouponService = catchServiceAsync(
+  async (couponId: string) => {
+    const res = await axiosInstance.delete(`/coupon/${couponId}`);
+    return res.data as TReturnData<any>;
+  }
+);

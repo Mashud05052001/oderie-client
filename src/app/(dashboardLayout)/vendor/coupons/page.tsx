@@ -1,4 +1,8 @@
 "use client";
+import {
+  useDeleteCoupon,
+  useDeleteCouponProduct,
+} from "@/src/hook_with_service/delete/delete.mutate.hook";
 import { useGetAllVendorCoupons } from "@/src/hook_with_service/swrGet/coupon.fetch";
 import { useGetMyInfos } from "@/src/hook_with_service/swrGet/user.fetch";
 import { TCoupon, TProductCoupon } from "@/src/types/response.type";
@@ -17,7 +21,7 @@ import { Button, Popover, Table } from "antd";
 import React, { useEffect, useState } from "react";
 
 interface ExpandedDataType {
-  key: React.Key;
+  key: string;
   productTitle: string;
   productDescription: string;
   productPrice: number;
@@ -28,34 +32,51 @@ interface ExpandedDataType {
 
 interface DataType extends TCoupon {
   key: string;
-  editable: boolean; // To track if the row is being edited
 }
 
 export default function Page() {
-  const [editableData, setEditableData] = useState<DataType[]>([]);
+  const [data, setData] = useState<DataType[]>([]);
   const { data: UserInfoResponse, isLoading: userDataLoading } = useGetMyInfos({
     includes: "vendor",
   });
   const vendorId = UserInfoResponse?.data?.Vendor
     ? UserInfoResponse?.data?.Vendor.id
     : "";
-  const { data: couponResponse, isLoading: couponDataLoading } =
-    useGetAllVendorCoupons({ vendorId });
+  const {
+    data: couponResponse,
+    isLoading: couponDataLoading,
+    revalidate,
+  } = useGetAllVendorCoupons({ vendorId });
+
+  const {
+    mutate: mutateDeleteCoupon,
+    isLoading: deleteCouponLoading,
+    isSuccess: deleteCouponSuccess,
+  } = useDeleteCoupon();
+  const {
+    mutate: mutateDeleteCouponProduct,
+    isLoading: deleteCouponProductLoading,
+    isSuccess: deleteCouponProductSuccess,
+  } = useDeleteCouponProduct();
+
   const couponData = couponResponse?.data;
 
   useEffect(() => {
-    if (couponData) {
-      // setEditableData(
-      //   couponData.map((coupon: TCoupon) => ({
-      //     key: coupon?.id,
-      //     editable: false,
-      //     ...coupon,
-      //     expiryDate: coupon?.expiryDate.split("T")[0],
-      //     percentage: `${coupon?.percentage} %`,
-      //   }))
-      // );
+    if (couponData?.length) {
+      const updatedData = couponData.map((coupon: TCoupon) => ({
+        key: coupon.id,
+        ...coupon,
+        expiryDate: coupon.expiryDate?.split("T")[0],
+        percentage: coupon.percentage,
+      }));
+      setData(updatedData);
     }
   }, [couponData]);
+  useEffect(() => {
+    if (deleteCouponSuccess || deleteCouponProductSuccess) {
+      revalidate();
+    }
+  }, [deleteCouponSuccess, deleteCouponProductSuccess]);
 
   const expandedRowRender = (coupon: TCoupon) => {
     const productInfo: ExpandedDataType[] =
@@ -96,41 +117,24 @@ export default function Page() {
     },
     { title: "Price", dataIndex: "productPrice", key: "productPrice" },
     { title: "Quantity", dataIndex: "productQuantity", key: "productQuantity" },
+    {
+      title: "Action",
+      key: "action",
+      render: (data: ExpandedDataType) => {
+        return (
+          <DeleteFilled
+            className="hover:text-red-600 cursor-pointer duration-100"
+            onClick={() => handleCouponProductDelete(data?.couponId, data?.key)}
+          />
+        );
+      },
+    },
   ];
 
   const columns: TableColumnsType<DataType> = [
     { title: "Coupon Code", dataIndex: "code", key: "code" },
-    {
-      title: "Discount",
-      dataIndex: "percentage",
-      key: "percentage",
-      render: (text, record) =>
-        record.editable ? (
-          <Input
-            defaultValue={text}
-            onChange={(e) => handleChange(e, "percentage", record.key)}
-          />
-        ) : (
-          text
-        ),
-    },
-    {
-      title: "Expiry Date",
-      dataIndex: "expiryDate",
-      key: "expiryDate",
-      render: (text, record) => {
-        return record.editable ? (
-          <DatePicker
-            onChange={(date) => {
-              return date;
-            }}
-            minValue={now(getLocalTimeZone())}
-          />
-        ) : (
-          text
-        );
-      },
-    },
+    { title: "Discount", dataIndex: "percentage", key: "percentage" },
+    { title: "Expiry Date", dataIndex: "expiryDate", key: "expiryDate" },
     {
       title: "Number of Products",
       key: "productCount",
@@ -146,113 +150,49 @@ export default function Page() {
       key: "operation",
       render: (data) => (
         <div className="flex space-x-4 text-xl">
-          {data.editable ? (
-            <>
-              <div>
-                <Button
-                  onClick={() => handleSave(data.key)}
-                  type="primary"
-                  size="small"
-                >
-                  <SaveOutlined />
-                </Button>
-              </div>
-              <div>
-                <Button
-                  onClick={() => handleCancel(data.key)}
-                  type="default"
-                  size="small"
-                >
-                  <CloseOutlined />
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <EditFilled
-                  className="hover:text-blue-600 cursor-pointer duration-100"
-                  onClick={() => handleEdit(data.key)}
-                />
-              </div>
-              <div>
-                <Popover
-                  content={
-                    <div className="flex justify-end">
-                      <button
-                        className="border-2 border-red-600 text-red-600 hover:text-white hover:bg-red-600 
-                      duration-100 mt-2 px-3 py-1 rounded-lg font-semibold"
-                        onClick={() => console.log(data)}
-                      >
-                        Yes, Delete It
-                      </button>
-                    </div>
-                  }
-                  title="Are you sure to delete the product?"
-                  trigger="click"
-                  placement="left"
-                >
-                  <DeleteFilled className="hover:text-red-600 cursor-pointer duration-100 " />
-                </Popover>
-              </div>
-            </>
-          )}
+          <div>
+            <EditFilled
+              className="hover:text-blue-600 cursor-pointer duration-100"
+              onClick={() => handleEdit(data)}
+            />
+          </div>
+          <div>
+            <DeleteFilled
+              className="hover:text-red-600 cursor-pointer duration-100"
+              onClick={() => handleDelete(data?.id)}
+            />
+          </div>
         </div>
       ),
     },
   ];
 
-  const handleEdit = (key: string) => {
-    setEditableData((prevData) =>
-      prevData.map((item) =>
-        item.key === key ? { ...item, editable: true } : item
-      )
+  const handleEdit = (couponId: string) => {
+    // const confirm = window.confirm("Are you sure to delete this coupon?");
+    // if (confirm) {
+    //   console.log(couponId);
+    // }
+  };
+
+  const handleDelete = (couponId: string) => {
+    const confirm = window.confirm("Are you sure to delete this coupon?");
+    if (confirm) {
+      mutateDeleteCoupon(couponId);
+    }
+  };
+
+  const handleCouponProductDelete = async (
+    couponId: string,
+    productId: string
+  ) => {
+    const data = { couponId, productId };
+    const confirm = window.confirm(
+      "Are you sure to delete this coupon product?"
     );
+    if (confirm) {
+      mutateDeleteCouponProduct(data);
+    }
   };
-
-  const handleSave = (key: string) => {
-    console.log(key);
-    setEditableData((prevData) =>
-      prevData.map((item) =>
-        item.key === key
-          ? {
-              ...item,
-              editable: false,
-              percentage: item.percentage,
-              expiryDate: item.expiryDate,
-            }
-          : item
-      )
-    );
-    console.log("Saved data:", editableData);
-  };
-
-  const handleCancel = (key: string) => {
-    // setEditableData((prevData) =>
-    //   prevData.map((item) =>
-    //     item.key === key
-    //       ? {
-    //           ...item,
-    //           editable: false,
-    //           percentage: `${item.percentage}`, // reset to original value
-    //           expiryDate: item.expiryDate, // reset to original value
-    //         }
-    //       : item
-    //   )
-    // );
-  };
-
-  const handleChange = (e: any, field: string, key: string) => {
-    setEditableData((prevData) =>
-      prevData.map((item) =>
-        item.key === key
-          ? { ...item, [field]: e.target ? e.target.value : e }
-          : item
-      )
-    );
-  };
-
-  const dataSource: DataType[] = editableData || [];
 
   return (
     <div>
@@ -262,10 +202,15 @@ export default function Page() {
         expandable={{
           expandedRowRender: (record) => expandedRowRender(record),
         }}
-        dataSource={dataSource}
+        dataSource={data}
         pagination={false}
         size="small"
-        loading={userDataLoading || couponDataLoading}
+        loading={
+          userDataLoading ||
+          couponDataLoading ||
+          deleteCouponLoading ||
+          deleteCouponProductLoading
+        }
       />
     </div>
   );
