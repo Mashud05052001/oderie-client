@@ -15,7 +15,10 @@ import OdForm from "../../UI/form/OdForm";
 import OdInput from "../../UI/form/OdInput";
 import ModalContainer from "../ModalContainer";
 import moment from "moment";
-import { IsoDateGenerator } from "@/src/utils/generateDate";
+import {
+  generateSelectedDateToLastMinuteOfTheDay,
+  IsoDateGenerator,
+} from "@/src/utils/generateDate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import couponSchema from "@/src/schema/coupon.schema";
 import { code } from "@nextui-org/theme";
@@ -42,12 +45,9 @@ export default function CreateCouponModal({
       );
       return;
     }
-    const dateObject = data.expiryDate;
-    const expiryDate = moment([
-      dateObject?.year,
-      dateObject?.month - 1,
-      dateObject?.day,
-    ]).toISOString();
+    const expiryDate = generateSelectedDateToLastMinuteOfTheDay(
+      data.expiryDate
+    );
     const createCouponData = {
       ...(data?.code && { code: data?.code }),
       percentage: data?.percentage,

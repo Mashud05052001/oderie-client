@@ -1,6 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { changePassword, updateUserProfile } from "./update.mutate.service";
+import {
+  changePassword,
+  updateCoupon,
+  updateUserProfile,
+} from "./update.mutate.service";
 import { FieldValues } from "react-hook-form";
 
 export const useUpdateUserProfile = () => {
@@ -21,6 +25,24 @@ export const useChangePassword = () => {
     mutationFn: async (payload: FieldValues) => await changePassword(payload),
     onSuccess: () => {
       toast.success("Password changed successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed. ${error?.message}`);
+    },
+  });
+};
+
+export const useUpdateCoupon = () => {
+  return useMutation<
+    any,
+    Error,
+    { payload: FieldValues; couponId: string },
+    unknown
+  >({
+    mutationFn: async (payload: { payload: FieldValues; couponId: string }) =>
+      await updateCoupon(payload?.couponId, payload?.payload),
+    onSuccess: () => {
+      toast.success("Coupon updated successfully");
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);

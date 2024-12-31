@@ -13,3 +13,16 @@ export const IsoDateGenerator = (dateObject: any) => {
   const selectedDate = moment(dateString).toISOString();
   return selectedDate;
 };
+
+export const generateSelectedDateToLastMinuteOfTheDay = (dateObject: any) => {
+  const date = moment([
+    dateObject?.year,
+    dateObject?.month - 1,
+    dateObject?.day,
+  ])
+    .add(29, "hours")
+    .add(59, "minutes")
+    .add(59, "seconds")
+    .toISOString();
+  return date;
+};

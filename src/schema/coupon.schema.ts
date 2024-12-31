@@ -23,4 +23,13 @@ const couponSchema = z.object({
   expiryDate: expiryDateSchema,
 });
 
+export const updateCouponSchema = z.object({
+  code: z.string(),
+  percentage: z
+    .number({ required_error: requiredMsg })
+    .min(0, "Percentage must be at least 0.")
+    .max(100, "Percentage cannot exceed 100."),
+  expiryDate: expiryDateSchema,
+});
+
 export default couponSchema;
