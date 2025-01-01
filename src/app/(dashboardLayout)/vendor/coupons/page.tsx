@@ -1,37 +1,18 @@
 "use client";
+import EditCouponData from "@/src/components/modal/couponModal/EditCouponData";
 import ModalContainer from "@/src/components/modal/ModalContainer";
-import OdButton from "@/src/components/UI/button/OdButton";
-import OdDatePicker from "@/src/components/UI/form/OdDatePicker";
-import OdForm from "@/src/components/UI/form/OdForm";
-import OdInput from "@/src/components/UI/form/OdInput";
+import MyPagination from "@/src/components/shared/Pagination";
 import {
   useDeleteCoupon,
   useDeleteCouponProduct,
 } from "@/src/hook_with_service/delete/delete.mutate.hook";
 import { useGetAllVendorCoupons } from "@/src/hook_with_service/swrGet/coupon.fetch";
-import { useGetMyInfos } from "@/src/hook_with_service/swrGet/user.fetch";
-import { useUpdateCoupon } from "@/src/hook_with_service/update/update.mutate.hook";
-import { updateCouponSchema } from "@/src/schema/coupon.schema";
-import { TReturnData } from "@/src/types";
 import { TCoupon, TProductCoupon } from "@/src/types/response.type";
-import { generateSelectedDateToLastMinuteOfTheDay } from "@/src/utils/generateDate";
-import {
-  CloseOutlined,
-  DeleteFilled,
-  EditFilled,
-  SaveOutlined,
-} from "@ant-design/icons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getLocalTimeZone, now } from "@internationalized/date";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import { Avatar } from "@nextui-org/avatar";
-import { DatePicker } from "@nextui-org/date-picker";
-import { Input } from "@nextui-org/input";
 import type { TableColumnsType } from "antd";
-import { Button, Popover, Table } from "antd";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { Controller, FieldValues, SubmitHandler } from "react-hook-form";
-import { toast } from "sonner";
+import { Table } from "antd";
+import { useEffect, useState } from "react";
 
 interface TExpandedContent {
   key: string;
@@ -48,21 +29,16 @@ interface TMainContent extends TCoupon {
 }
 
 export default function Page() {
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(5);
   const [data, setData] = useState<TMainContent[]>([]);
   const [editModalOpenId, setEditModalOpenId] = useState<string | null>(null);
-  const { data: UserInfoResponse, isLoading: userDataLoading } = useGetMyInfos({
-    includes: "vendor",
-  });
-  const vendorId = UserInfoResponse?.data?.Vendor
-    ? UserInfoResponse?.data?.Vendor.id
-    : "";
 
   const {
     data: couponResponse,
     isLoading: couponDataLoading,
     revalidate,
-  } = useGetAllVendorCoupons({ vendorId });
-
+  } = useGetAllVendorCoupons({ page, limit });
   const {
     mutate: mutateDeleteCoupon,
     isLoading: deleteCouponLoading,
@@ -74,7 +50,8 @@ export default function Page() {
     isSuccess: deleteCouponProductSuccess,
   } = useDeleteCouponProduct();
 
-  const couponData = couponResponse?.data;
+  const couponData = couponResponse?.data?.data;
+  const meta = couponResponse?.data?.meta!;
 
   useEffect(() => {
     if (couponData?.length) {
@@ -85,6 +62,8 @@ export default function Page() {
         percentage: coupon.percentage,
       }));
       setData(updatedData);
+    } else {
+      setData([]);
     }
   }, [couponData]);
   useEffect(() => {
@@ -204,13 +183,6 @@ export default function Page() {
     },
   ];
 
-  const handleEdit = (couponId: string) => {
-    // const confirm = window.confirm("Are you sure to delete this coupon?");
-    // if (confirm) {
-    //   console.log(couponId);
-    // }
-  };
-
   const handleDelete = (couponId: string) => {
     const confirm = window.confirm("Are you sure to delete this coupon?");
     if (confirm) {
@@ -233,116 +205,32 @@ export default function Page() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-8">All Coupons</h1>
-      <Table<TMainContent>
-        columns={columns}
-        expandable={{
-          expandedRowRender: (record) => expandedRowRender(record),
-        }}
-        dataSource={data}
-        pagination={false}
-        size="small"
-        loading={
-          // userDataLoading
-          // ||
-          couponDataLoading || deleteCouponLoading || deleteCouponProductLoading
-        }
+      <div className="min-h-[80vh]">
+        <h1 className="text-2xl font-bold mb-8">All Coupons</h1>
+        <Table<TMainContent>
+          columns={columns}
+          expandable={{
+            expandedRowRender: (record) => expandedRowRender(record),
+          }}
+          dataSource={data}
+          pagination={false}
+          size="small"
+          loading={
+            couponDataLoading ||
+            deleteCouponLoading ||
+            deleteCouponProductLoading
+          }
+        />
+      </div>
+
+      <MyPagination
+        className="mt-5 mb-10"
+        limit={limit}
+        page={page}
+        setLimit={setLimit}
+        setPage={setPage}
+        total={meta?.total}
       />
     </div>
   );
 }
-
-const EditCouponData = ({
-  couponData,
-  revalidate,
-  setEditModalClose,
-}: {
-  couponData: TMainContent;
-  revalidate: () => Promise<TReturnData<TCoupon[]> | undefined>;
-  setEditModalClose: React.Dispatch<React.SetStateAction<string | null>>;
-}) => {
-  const [selectedDate, setSelectedDate] = useState<boolean>(false);
-  const { mutate, isLoading, isSuccess } = useUpdateCoupon();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const expiryDate = generateSelectedDateToLastMinuteOfTheDay(
-      data.expiryDate
-    );
-    const updatedData: Partial<TCoupon> = {};
-    if (couponData?.code !== data?.code) updatedData["code"] = data?.code;
-    if (couponData?.expiryDate !== expiryDate)
-      updatedData["expiryDate"] = expiryDate;
-    if (couponData?.percentage !== data?.percentage)
-      updatedData["percentage"] = data?.percentage;
-    if (Object.keys(updatedData).length === 0) {
-      toast.error("Please change anything before update");
-      return;
-    }
-
-    const confirm = window.confirm("Are you sure to update the coupon");
-    if (confirm) {
-      const payload = {
-        couponId: couponData?.id,
-        payload: updatedData,
-      };
-      mutate(payload);
-    }
-  };
-  useEffect(() => {
-    if (!isLoading && isSuccess) {
-      revalidate();
-      setEditModalClose(null);
-    }
-  }, [isLoading, isSuccess]);
-  return (
-    <OdForm
-      onSubmit={onSubmit}
-      className="space-y-6"
-      resolver={zodResolver(updateCouponSchema)}
-    >
-      <OdInput
-        label="Coupon Code"
-        name="code"
-        type="text"
-        defaultValue={couponData?.code}
-      />
-      <OdInput
-        label="Percentage"
-        name="percentage"
-        type="number"
-        defaultValue={couponData?.percentage}
-      />
-      <Controller
-        name="expiryDate"
-        render={({ field, fieldState: { error } }) => (
-          <div className="relative">
-            <DatePicker
-              {...field}
-              onChange={(date) => {
-                setSelectedDate(true);
-                field.onChange(date);
-              }}
-              label={`Previous Expiry Date : ${moment(couponData?.expiryDate).utc().format("MM/DD/YYYY")}`}
-              variant="underlined"
-              showMonthAndYearPickers
-              hideTimeZone
-              minValue={now(getLocalTimeZone())}
-            />
-            {error && (
-              <div className="absolute left-1 bottom-[-1.4rem] text-red-500 whitespace-nowrap overflow-hidden text-sm font-medium text-ellipsis">
-                <small>{error.message}</small>
-              </div>
-            )}
-          </div>
-        )}
-      />
-      <div>
-        <OdButton
-          buttonText="Update Coupon"
-          className="mt-5"
-          isLoading={isLoading}
-          isDisabled={!selectedDate}
-        />
-      </div>
-    </OdForm>
-  );
-};

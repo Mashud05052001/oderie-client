@@ -5,6 +5,7 @@ import {
   deleteCouponService,
   deleteProductService,
 } from "./delete.mutate.service";
+import { mutate } from "swr";
 
 export const useDeleteProduct = () => {
   return useMutation<any, Error, string, unknown>({
@@ -30,6 +31,7 @@ export const useDeleteCouponProduct = () => {
       await deleteCouponProductService({ productId, couponId }),
     onSuccess: () => {
       toast.success("Product deleted successfully from coupon");
+      mutate;
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);
