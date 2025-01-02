@@ -8,3 +8,16 @@
 .ant-rate {
   font-size: 15px !important;
 }
+
+.article-content {
+  all: revert;
+}
+
+.article-content * {
+  all: revert;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+}

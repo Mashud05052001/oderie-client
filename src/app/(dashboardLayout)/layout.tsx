@@ -28,7 +28,9 @@ const VendorLayout = ({ children }: TChildrenProps) => {
       ? adminSidebarItems
       : user?.role === "VENDOR"
         ? vendorSidebarItems
-        : userSidebarItems;
+        : user?.role === "CUSTOMER"
+          ? userSidebarItems
+          : [];
 
   const sidebarItemsWithLogout: ItemType[] = [
     ...sidebarItems,

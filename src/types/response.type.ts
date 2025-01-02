@@ -83,10 +83,10 @@ export type TVendor = {
   id: string;
   email: string;
   name: string;
-  phone: string | null;
-  logo: string | null;
-  description: string | null;
-  address: string | null;
+  phone: string;
+  logo: string;
+  description: string;
+  address: string;
   ratings: number;
   ratingsCount: number;
   isBlackListed: boolean;
@@ -95,15 +95,15 @@ export type TVendor = {
 
   User?: TUser;
   Product?: TProduct[];
+  Follow?: TFollow[];
   _count?: {
     Follow: number;
     Order: number;
     Product: number;
     VendorResponse: number;
   };
-  // VendorResponse ?: TVendorResponse[],
-  // Order ?: TOrder[],
-  // Follow ?: TFollow[]
+  VendorResponse?: TVendorResponse[];
+  Order?: TOrder[];
 };
 
 export type TCoupon = {

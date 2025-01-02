@@ -1,3 +1,4 @@
+"use client";
 import dynamic from "next/dynamic";
 import { Controller } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ export default function OdTextEditor({ name, label, className }: TProps) {
     setEditorReady(true);
   }, []);
 
-  if (!isEditorReady) return <div>Loading editor...</div>; // Show loading state until the editor is ready
+  if (!isEditorReady) return <div>Loading editor...</div>;
 
   return (
     <Controller

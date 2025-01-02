@@ -1,13 +1,8 @@
 import "@/src/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
-import clsx from "clsx";
-
 import { Providers } from "./providers";
-
-import { siteConfig } from "@/src/config/site";
 import { fontSans } from "@/src/config/fonts";
-import { Navbar } from "@/src/components/navbar";
+import { siteConfig } from "@/src/config/site";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 export const metadata: Metadata = {
@@ -37,10 +32,7 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="en">
       <head />
       <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
+        className={`min-h-screen bg-background font-sans antialiased ${fontSans?.variable}`}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <AntdRegistry>{children}</AntdRegistry>
