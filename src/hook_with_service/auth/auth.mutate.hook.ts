@@ -29,8 +29,10 @@ export const useUserRegister = () => {
 export const useUserLogin = () => {
   return useMutation<TReturnData<TLoginResponse>, Error, FieldValues, unknown>({
     mutationFn: async (payload: FieldValues) => await loginUserService(payload),
-    onSuccess: () => {
-      toast.success("User logged in successfully");
+    onSuccess: (data) => {
+      let role = (data as TReturnData<TLoginResponse>)?.data?.role;
+      role = role[0].toUpperCase() + role.slice(1).toLowerCase();
+      toast.success(`${role} logged in successfully`);
     },
     onError: (error) => {
       console.log(error);

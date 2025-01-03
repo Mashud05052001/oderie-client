@@ -16,7 +16,7 @@ export default function OdTextarea({
   label,
   variant = "underlined",
   size = "md",
-  defaultValue = "", // Set a default fallback value
+  defaultValue = "",
   rows = 3,
 }: TProps) {
   return (
@@ -35,7 +35,8 @@ export default function OdTextarea({
             size={size}
             label={label}
             variant={variant}
-            minRows={rows}
+            // minRows={rows}
+            minRows={300}
           />
           {error && (
             <div className="absolute left-1 bottom-[-1.4rem] text-red-500 whitespace-nowrap overflow-hidden text-sm font-medium text-ellipsis">

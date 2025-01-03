@@ -4,6 +4,7 @@ import OdButton from "@/src/components/UI/button/OdButton";
 import CenterContainer from "@/src/components/UI/container/CenterContainer";
 import OdForm from "@/src/components/UI/form/OdForm";
 import OdInput from "@/src/components/UI/form/OdInput";
+import envConfig from "@/src/config/envConfig";
 import { useUserProvider } from "@/src/context/user.provider";
 import { useUserLogin } from "@/src/hook_with_service/auth/auth.mutate.hook";
 import { loginValidationSchema } from "@/src/schema/auth.schema";
@@ -32,19 +33,25 @@ const LoginPage = () => {
     console.log(data);
     mutateLogin(data);
   };
+  const customLogin = (email: string, password: string) => {
+    console.log(email, password);
+    mutateLogin({ email, password });
+  };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && loginData) {
+      console.log(isSuccess, loginData);
       setUserLoading(true);
-      console.log(loginData);
-      /*
-        Customer => Home Page or redirected page
-        Vendor => Vendor Dashboard
-        Admin => Admin Dashboard
-      */
-      router.replace(redirect);
+      const role = loginData?.data?.role;
+      if (role === "ADMIN") {
+        router.replace("/admin/profile");
+      } else if (role === "VENDOR") {
+        router.replace("/vendor/profile");
+      } else {
+        router.replace(redirect);
+      }
     }
-  }, [isSuccess, redirect, router, isLoginLoading]);
+  }, [isSuccess, redirect, router, isLoginLoading, loginData]);
 
   return (
     <div>
@@ -55,10 +62,51 @@ const LoginPage = () => {
             resolver={zodResolver(loginValidationSchema)}
           >
             <div className="space-y-6 relative ">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center ">
                 <h1 className="text-3xl font-semibold tracking-tight text-common-700 dark:text-common-300">
                   Login
                 </h1>
+                <div className="flex gap-x-0.5">
+                  <button
+                    type="button"
+                    className="px-4 py-2 hover:bg-orange-300 duration-200 rounded-lg font-medium "
+                    onClick={() =>
+                      customLogin(
+                        envConfig?.admin_email!,
+                        envConfig?.admin_password!
+                      )
+                    }
+                    disabled={isLoginLoading}
+                  >
+                    Admin
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 hover:bg-orange-300 duration-200 rounded-lg font-medium "
+                    onClick={() =>
+                      customLogin(
+                        envConfig?.vendor_email!,
+                        envConfig?.vendor_password!
+                      )
+                    }
+                    disabled={isLoginLoading}
+                  >
+                    Vendor
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 hover:bg-orange-300 duration-200 rounded-lg font-medium"
+                    onClick={() =>
+                      customLogin(
+                        envConfig?.customer_email!,
+                        envConfig?.customer_password!
+                      )
+                    }
+                    disabled={isLoginLoading}
+                  >
+                    Customer
+                  </button>
+                </div>
                 {/* Back to Home Button */}
                 <Link
                   href="/"
