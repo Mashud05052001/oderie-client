@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   changePassword,
   updateCoupon,
+  updateResponseService,
   updateUserProfile,
 } from "./update.mutate.service";
 import { FieldValues } from "react-hook-form";
@@ -43,6 +44,23 @@ export const useUpdateCoupon = () => {
       await updateCoupon(payload?.couponId, payload?.payload),
     onSuccess: () => {
       toast.success("Coupon updated successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed. ${error?.message}`);
+    },
+  });
+};
+export const useUpdateResponse = () => {
+  return useMutation<
+    any,
+    Error,
+    { responseId: string; payload: FieldValues },
+    unknown
+  >({
+    mutationFn: async (payload: { responseId: string; payload: FieldValues }) =>
+      await updateResponseService(payload?.responseId, payload?.payload),
+    onSuccess: () => {
+      toast.success("Response updated successfully");
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);

@@ -1,6 +1,6 @@
 "use server";
 import axiosInstance from "@/src/lib/axiosInstance";
-import { TCoupon, TProfile, TReturnData } from "@/src/types";
+import { TCoupon, TProfile, TReturnData, TVendorResponse } from "@/src/types";
 import catchServiceAsync from "@/src/utils/servicesCatchAsync";
 import { revalidateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
@@ -31,5 +31,15 @@ export const updateCoupon = catchServiceAsync(
     const response = await axiosInstance.patch(`/coupon/${couponId}`, payload);
     const data = response?.data as TReturnData<TCoupon>;
     return data;
+  }
+);
+
+export const updateResponseService = catchServiceAsync(
+  async (responseId: string, payload: FieldValues) => {
+    const res = await axiosInstance.patch(
+      `/vendor-response/${responseId}`,
+      payload
+    );
+    return res.data as TReturnData<TVendorResponse>;
   }
 );

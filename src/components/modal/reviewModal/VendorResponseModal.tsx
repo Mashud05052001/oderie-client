@@ -3,18 +3,16 @@ import { useCreateResponse } from "@/src/hook_with_service/create/create.mutate.
 import { createVendorResponseSchema } from "@/src/schema/review.schema";
 import { TReview, TSuccessMetaData } from "@/src/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   FieldValues,
   FormProvider,
   SubmitHandler,
   useForm,
-  useFormContext,
 } from "react-hook-form";
 import OdButton from "../../UI/button/OdButton";
-import OdForm from "../../UI/form/OdForm";
 import OdTextarea from "../../UI/form/OdTextArea";
-import { boolean } from "zod";
+import { useUpdateResponse } from "@/src/hook_with_service/update/update.mutate.hook";
 
 const CreateVendorResponse = ({
   userReview,
@@ -32,16 +30,31 @@ const CreateVendorResponse = ({
   });
   const message = methods.watch("message");
 
-  const { mutate, isLoading, isSuccess } = useCreateResponse();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const confirm = window.confirm("Are you sure to send response");
-    if (confirm) {
-      const payload = {
-        reviewId: userReview?.id,
-        message: data?.message,
-      };
+  const { mutate: createMutate, isLoading, isSuccess } = useCreateResponse();
+  const {
+    mutate: updateMutate,
+    isLoading: isLoading1,
+    isSuccess: isSuccess1,
+  } = useUpdateResponse();
 
-      mutate(payload);
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const confirm = window.confirm(
+      `Are you sure to ${isEdit ? "edit" : "create"} response`
+    );
+    if (confirm) {
+      if (isEdit && userReview?.VendorResponse) {
+        const updatedData = {
+          payload: { message: data?.message },
+          responseId: userReview?.VendorResponse?.id,
+        };
+        updateMutate(updatedData);
+      } else {
+        const createdData = {
+          reviewId: userReview?.id,
+          message: data?.message,
+        };
+        createMutate(createdData);
+      }
     }
   };
   useEffect(() => {
@@ -50,6 +63,12 @@ const CreateVendorResponse = ({
       setEditModalClose(null);
     }
   }, [isLoading, isSuccess]);
+  useEffect(() => {
+    if (isEdit && !isLoading1 && isSuccess1) {
+      revalidate();
+      setEditModalClose(null);
+    }
+  }, [isLoading1, isSuccess1]);
   return (
     <div>
       <div className="bg-white border-gray-200 mb-6">
@@ -85,10 +104,11 @@ const CreateVendorResponse = ({
           <OdButton
             buttonText={`${isEdit ? "Update" : "Create"} Response`}
             className="mt-5"
-            isLoading={isLoading}
+            isLoading={isLoading || isLoading1}
             isDisabled={
               (isEdit && userReview?.VendorResponse?.message === message) ||
-              message === ""
+              message === "" ||
+              !message
             }
           />
         </form>
