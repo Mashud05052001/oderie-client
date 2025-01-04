@@ -35,8 +35,8 @@ export default function OdTextarea({
             size={size}
             label={label}
             variant={variant}
-            // minRows={rows}
-            minRows={300}
+            minRows={rows}
+            // minRows={300}
           />
           {error && (
             <div className="absolute left-1 bottom-[-1.4rem] text-red-500 whitespace-nowrap overflow-hidden text-sm font-medium text-ellipsis">

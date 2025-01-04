@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   createCouponService,
   createProductService,
+  createResponseService,
   createReviewService,
   duplicateProductService,
   updateProductService,
@@ -67,6 +68,18 @@ export const useCreateReview = () => {
       await createReviewService(payload),
     onSuccess: () => {
       toast.success("Review created successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed. ${error?.message}`);
+    },
+  });
+};
+export const useCreateResponse = () => {
+  return useMutation<any, Error, FieldValues, unknown>({
+    mutationFn: async (payload: FieldValues) =>
+      await createResponseService(payload),
+    onSuccess: () => {
+      toast.success("Response created successfully");
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);

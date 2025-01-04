@@ -1,6 +1,6 @@
 "use server";
 import axiosInstance from "@/src/lib/axiosInstance";
-import { TReturnData, TReview } from "@/src/types";
+import { TReturnData, TReview, TVendorResponse } from "@/src/types";
 import catchServiceAsync from "@/src/utils/servicesCatchAsync";
 import { revalidateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
@@ -36,5 +36,11 @@ export const createReviewService = catchServiceAsync(
     revalidateTag("myRemainingReviewOrderData");
     revalidateTag("myReviews");
     return res.data as TReturnData<TReview>;
+  }
+);
+export const createResponseService = catchServiceAsync(
+  async (payload: FieldValues) => {
+    const res = await axiosInstance.post(`/vendor-response`, payload);
+    return res.data as TReturnData<TVendorResponse>;
   }
 );
