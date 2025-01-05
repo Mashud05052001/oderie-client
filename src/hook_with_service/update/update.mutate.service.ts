@@ -1,6 +1,13 @@
 "use server";
 import axiosInstance from "@/src/lib/axiosInstance";
-import { TCoupon, TProfile, TReturnData, TVendorResponse } from "@/src/types";
+import {
+  TCoupon,
+  TOrder,
+  TOrderStatus,
+  TProfile,
+  TReturnData,
+  TVendorResponse,
+} from "@/src/types";
 import catchServiceAsync from "@/src/utils/servicesCatchAsync";
 import { revalidateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
@@ -41,5 +48,12 @@ export const updateResponseService = catchServiceAsync(
       payload
     );
     return res.data as TReturnData<TVendorResponse>;
+  }
+);
+
+export const changeOrderStatus = catchServiceAsync(
+  async (orderId: string, payload: { status: "DELIVERED" | "CANCELLED" }) => {
+    const res = await axiosInstance.patch(`/order/${orderId}`, payload);
+    return res.data as TReturnData<TOrder>;
   }
 );

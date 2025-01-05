@@ -12,7 +12,7 @@ import {
 } from "react-hook-form";
 import OdButton from "../../UI/button/OdButton";
 import OdTextarea from "../../UI/form/OdTextArea";
-import { useUpdateResponse } from "@/src/hook_with_service/update/update.mutate.hook";
+import { useChangeOrderStatus } from "@/src/hook_with_service/update/update.mutate.hook";
 
 const CreateVendorResponse = ({
   userReview,
@@ -35,7 +35,7 @@ const CreateVendorResponse = ({
     mutate: updateMutate,
     isLoading: isLoading1,
     isSuccess: isSuccess1,
-  } = useUpdateResponse();
+  } = useChangeOrderStatus();
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     const confirm = window.confirm(

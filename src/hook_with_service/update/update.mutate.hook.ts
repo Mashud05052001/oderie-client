@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+  changeOrderStatus,
   changePassword,
   updateCoupon,
   updateResponseService,
@@ -50,6 +51,7 @@ export const useUpdateCoupon = () => {
     },
   });
 };
+
 export const useUpdateResponse = () => {
   return useMutation<
     any,
@@ -61,6 +63,26 @@ export const useUpdateResponse = () => {
       await updateResponseService(payload?.responseId, payload?.payload),
     onSuccess: () => {
       toast.success("Response updated successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed. ${error?.message}`);
+    },
+  });
+};
+
+export const useChangeOrderStatus = () => {
+  return useMutation<
+    any,
+    Error,
+    { orderId: string; status: "DELIVERED" | "CANCELLED" },
+    unknown
+  >({
+    mutationFn: async (payload: {
+      orderId: string;
+      status: "DELIVERED" | "CANCELLED";
+    }) => await changeOrderStatus(payload?.orderId, { status: payload.status }),
+    onSuccess: () => {
+      toast.success("Status changes successfully");
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);

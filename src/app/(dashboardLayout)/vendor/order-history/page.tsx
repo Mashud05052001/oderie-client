@@ -3,7 +3,9 @@ import ModalContainer from "@/src/components/modal/ModalContainer";
 import OrderedProductsModal from "@/src/components/modal/reviewModal/CustomerOrderedProductsModal";
 import MyPagination from "@/src/components/shared/Pagination";
 import PopOverContent from "@/src/components/shared/smallComponents/PopOverContent";
+import OdButton from "@/src/components/UI/button/OdButton";
 import { useGetAllOrders } from "@/src/hook_with_service/swrGet/order.fetch";
+import { useChangeOrderStatus } from "@/src/hook_with_service/update/update.mutate.hook";
 import {
   orderStatusArr,
   paymentStatusArr,
@@ -22,6 +24,7 @@ import { Avatar } from "@nextui-org/avatar";
 import { Select, SelectItem } from "@nextui-org/select";
 import type { TableColumnsType } from "antd";
 import { Badge, Popover, Table } from "antd";
+import { Truck } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -273,6 +276,11 @@ export default function Page() {
     status,
     paymentStatus,
   });
+  const {
+    mutate: mutateChangeStatus,
+    isLoading: changeStatusLoading,
+    isSuccess: changeStatusSuccess,
+  } = useChangeOrderStatus();
 
   const orderData = orderResponse?.data?.data;
   const meta = orderResponse?.data?.meta!;
@@ -289,6 +297,21 @@ export default function Page() {
       setData([]);
     }
   }, [orderData]);
+  useEffect(() => {
+    if (!changeStatusLoading && changeStatusSuccess) {
+      setEditModalOpenId(null);
+      revalidate();
+    }
+  }, [changeStatusLoading, changeStatusSuccess]);
+
+  const handleChangeProductStatus = (orderId: string) => {
+    const confirm = window.confirm(
+      `Are you sure to change the the status to DELEVERED?`
+    );
+    if (confirm) {
+      mutateChangeStatus({ orderId, status: "DELIVERED" });
+    }
+  };
 
   // If expanded column need use it
   // const expandedRowRender = (order: TOrder) => {
@@ -411,34 +434,71 @@ export default function Page() {
     {
       title: "Action",
       key: "operation",
-      render: (data: TTableContent) => {
-        return (
-          <div className="flex space-x-4 text-xl">
+      render: (data: TTableContent) => (
+        <div className="flex space-x-4 pl-2.5">
+          {data?.paymentStatus === "PAID" && data?.status === "PROCESSING" ? (
             <div>
-              <ModalContainer
-                isOpen={editModalOpenId === data.id}
-                setIsOpen={(isOpen) =>
+              <Popover
+                trigger={"click"}
+                open={editModalOpenId === data.id}
+                onOpenChange={(isOpen) =>
                   isOpen
                     ? setEditModalOpenId(data.id)
                     : setEditModalOpenId(null)
                 }
-                placement="top"
-                triggerElement={
-                  <EditFilled className="hover:text-blue-600 cursor-pointer duration-100" />
+                placement="topLeft"
+                content={
+                  <div className="p-2 pt-0 ">
+                    <h4 className="font-semibold mb-3">Change order status</h4>
+                    <p>Are you sure to change status to Delivered?</p>
+                    <div className="mt-6 flex justify-end gap-x-2">
+                      <OdButton
+                        buttonText="Yes"
+                        size="sm"
+                        className="px-4 rounded-sm"
+                        variant="ghost"
+                        onClick={() => handleChangeProductStatus(data?.id)}
+                        isLoading={changeStatusLoading}
+                      />
+                      <OdButton
+                        buttonText="No"
+                        size="sm"
+                        className="px-4 rounded-sm"
+                        isDisabled={changeStatusLoading}
+                        onClick={() => setEditModalOpenId(null)}
+                      />
+                    </div>
+                  </div>
                 }
-                title={`Change status`}
               >
-                mashudubasdbjbads
-                {/* <EditCouponData
-                  couponData={data}
-                  revalidate={revalidate}
-                  setEditModalClose={setEditModalOpenId}
-                /> */}
-              </ModalContainer>
+                <Truck className="hover:text-blue-600 cursor-pointer duration-100" />
+              </Popover>
+              {/* <ModalContainer
+              isOpen={editModalOpenId === data.id}
+              setIsOpen={(isOpen) =>
+                isOpen
+                  ? setEditModalOpenId(data.id)
+                  : setEditModalOpenId(null)
+              }
+              placement="top"
+              triggerElement={
+                <EditFilled className="hover:text-blue-600 cursor-pointer duration-100" />
+              }
+              title={`Change status`}
+            >
+              mashudubasdbjbads
+            </ModalContainer> */}
+              {/* <EditCouponData
+                couponData={data}
+                revalidate={revalidate}
+                setEditModalClose={setEditModalOpenId}
+              /> */}
             </div>
-          </div>
-        );
-      },
+          ) : (
+            <p>❌</p>
+          )}
+        </div>
+      ),
     },
   ];
 
