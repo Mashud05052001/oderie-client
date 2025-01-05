@@ -4,6 +4,7 @@ import {
   deleteCouponProductService,
   deleteCouponService,
   deleteProductService,
+  deleteVendorResponseService,
 } from "./delete.mutate.service";
 import { mutate } from "swr";
 
@@ -44,6 +45,19 @@ export const useDeleteCoupon = () => {
     mutationFn: async (couponId: string) => await deleteCouponService(couponId),
     onSuccess: () => {
       toast.success("Coupon deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed. ${error?.message}`);
+    },
+  });
+};
+
+export const useDeleteVendorResponse = () => {
+  return useMutation<any, Error, string, unknown>({
+    mutationFn: async (responseId: string) =>
+      await deleteVendorResponseService(responseId),
+    onSuccess: () => {
+      toast.success("Vendor response deleted successfully");
     },
     onError: (error) => {
       toast.error(`Failed. ${error?.message}`);

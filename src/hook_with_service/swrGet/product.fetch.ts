@@ -1,5 +1,5 @@
 import axiosInstance from "@/src/lib/axiosInstance";
-import { TSuccessMetaData } from "@/src/types";
+import { TReturnData, TSuccessMetaData } from "@/src/types";
 import { TProduct } from "@/src/types/response.type";
 import { AxiosError } from "axios";
 import useSWR from "swr";
@@ -39,6 +39,25 @@ export const useGetAllProducts = ({
     data: data || null,
     error: error as AxiosError,
     isLoading,
+    revalidate: () => mutate(),
+  };
+};
+
+export const useGetAllReviewedProducts = () => {
+  const url = "/review/products";
+  const fetcher = async (url: string) => {
+    const result = (await axiosInstance.get(url)).data as TReturnData<
+      Pick<TProduct, "id" | "title" | "img" | "Category">[]
+    >;
+    return result;
+  };
+  const { data, error, isLoading, isValidating, mutate } = useSWR(url, fetcher);
+
+  return {
+    data: data || null,
+    error: error as AxiosError,
+    isLoading,
+    isValidating,
     revalidate: () => mutate(),
   };
 };

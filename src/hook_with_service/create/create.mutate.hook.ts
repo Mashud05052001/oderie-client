@@ -82,6 +82,7 @@ export const useCreateResponse = () => {
       toast.success("Response created successfully");
     },
     onError: (error) => {
+      console.log(error);
       toast.error(`Failed. ${error?.message}`);
     },
   });

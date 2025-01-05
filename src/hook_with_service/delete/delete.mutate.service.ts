@@ -23,3 +23,10 @@ export const deleteCouponService = catchServiceAsync(
     return res.data as TReturnData<any>;
   }
 );
+
+export const deleteVendorResponseService = catchServiceAsync(
+  async (responseId: string) => {
+    const res = await axiosInstance.delete(`/vendor-response/${responseId}`);
+    return res.data as TReturnData<any>;
+  }
+);
