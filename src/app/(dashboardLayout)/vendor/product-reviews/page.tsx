@@ -12,7 +12,7 @@ import { Avatar } from "@nextui-org/avatar";
 import { Select, SelectItem } from "@nextui-org/select";
 import type { TableColumnsType } from "antd";
 import { Popover, Table } from "antd";
-import { DeleteIcon, MessageCircleReply, Trash2 } from "lucide-react";
+import { MessageCircleReply, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
