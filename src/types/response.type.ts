@@ -2,6 +2,13 @@ export type TUserRole = "CUSTOMER" | "ADMIN" | "VENDOR";
 export type TUserStatus = "ACTIVE" | "BLOCKED" | "DELETED";
 export type TPaymentStatus = "UNPAID" | "PAID";
 export type TOrderStatus = "PENDING" | "PROCESSING" | "DELIVERED" | "CANCELLED";
+export const orderStatusArr: TOrderStatus[] = [
+  "CANCELLED",
+  "DELIVERED",
+  "PENDING",
+  "PROCESSING",
+];
+export const paymentStatusArr: TPaymentStatus[] = ["PAID", "UNPAID"];
 
 export type TUser = {
   id: string;

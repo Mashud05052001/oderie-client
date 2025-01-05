@@ -2,13 +2,21 @@
 import ModalContainer from "@/src/components/modal/ModalContainer";
 import MyPagination from "@/src/components/shared/Pagination";
 import { useGetAllOrders } from "@/src/hook_with_service/swrGet/order.fetch";
-import { TOrder, TOrderItem, TOrderStatus } from "@/src/types/response.type";
+import {
+  orderStatusArr,
+  paymentStatusArr,
+  TOrder,
+  TOrderItem,
+  TOrderStatus,
+  TPaymentStatus,
+} from "@/src/types/response.type";
 import {
   getStringLastPortion,
   onlyFirstCharacterCapitalize,
 } from "@/src/utils/utils";
 import { EditFilled } from "@ant-design/icons";
 import { Avatar } from "@nextui-org/avatar";
+import { Select, SelectItem } from "@nextui-org/select";
 import type { TableColumnsType } from "antd";
 import { Table } from "antd";
 import Link from "next/link";
@@ -234,6 +242,7 @@ interface TSubTableContent {
   quantity: number;
   productTitle: string;
   productImage: string;
+  productId: string;
 }
 
 interface TTableContent extends TOrder {
@@ -242,6 +251,9 @@ interface TTableContent extends TOrder {
 
 export default function Page() {
   const [status, setStatus] = useState<TOrderStatus | null>(null);
+  const [paymentStatus, setpaymentStatus] = useState<TPaymentStatus | null>(
+    null
+  );
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(5);
   const [data, setData] = useState<TTableContent[]>([]);
@@ -255,6 +267,7 @@ export default function Page() {
     page,
     limit,
     status,
+    paymentStatus,
   });
 
   const orderData = orderResponse?.data?.data;
@@ -280,6 +293,7 @@ export default function Page() {
         quantity: item?.quantity,
         productTitle: item?.Product?.title || "Unknown Title",
         productImage: item?.Product?.img[0] as string,
+        productId: item?.Product?.id!,
       })) || [];
 
     return (
@@ -299,7 +313,7 @@ export default function Page() {
       render: (data: TSubTableContent) => (
         <Link
           className="flex min-w-fit space-x-3 items-center text-black hover:text-blue-600 hover:underline w-fit "
-          href={`/products/${data?.key}`}
+          href={`/products/${data?.productId}`}
         >
           <Avatar src={data?.productImage} size="sm" />
           <h4 className="min-w-40">{data?.productTitle}</h4>
@@ -375,7 +389,45 @@ export default function Page() {
   return (
     <div>
       <div className="min-h-[80vh]">
-        <h1 className="text-2xl font-bold mb-8">All Orders</h1>
+        <h1 className="text-2xl font-bold mb-4">All Orders</h1>
+        <div className="mb-6 flex gap-x-10">
+          <div className="relative w-fit">
+            <Select
+              className="min-w-48"
+              label="Status"
+              size="sm"
+              variant="underlined"
+              onChange={(e) => {
+                const value = e.target.value as TOrderStatus;
+                if (orderStatusArr.includes(value)) setStatus(value);
+                else setStatus(null);
+              }}
+            >
+              <SelectItem key="all">All</SelectItem>
+              <SelectItem key="PENDING">Pending</SelectItem>
+              <SelectItem key="PROCESSING">Processing</SelectItem>
+              <SelectItem key="DELIVERED">Delivered</SelectItem>
+              <SelectItem key="CANCELLED">Cancelled</SelectItem>
+            </Select>
+          </div>
+          <div className="relative w-fit">
+            <Select
+              className="min-w-48"
+              label="Payment status"
+              size="sm"
+              variant="underlined"
+              onChange={(e) => {
+                const value = e.target.value as TPaymentStatus;
+                if (paymentStatusArr.includes(value)) setpaymentStatus(value);
+                else setpaymentStatus(null);
+              }}
+            >
+              <SelectItem key="all">All</SelectItem>
+              <SelectItem key="PAID">Paid</SelectItem>
+              <SelectItem key="UNPAID">Unpaid</SelectItem>
+            </Select>
+          </div>
+        </div>
         <Table<TTableContent>
           columns={columns}
           expandable={{
