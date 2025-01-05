@@ -1,6 +1,8 @@
 "use client";
 import ModalContainer from "@/src/components/modal/ModalContainer";
+import OrderedProductsModal from "@/src/components/modal/reviewModal/CustomerOrderedProductsModal";
 import MyPagination from "@/src/components/shared/Pagination";
+import PopOverContent from "@/src/components/shared/smallComponents/PopOverContent";
 import { useGetAllOrders } from "@/src/hook_with_service/swrGet/order.fetch";
 import {
   orderStatusArr,
@@ -11,6 +13,7 @@ import {
   TPaymentStatus,
 } from "@/src/types/response.type";
 import {
+  getStatusColor,
   getStringLastPortion,
   onlyFirstCharacterCapitalize,
 } from "@/src/utils/utils";
@@ -18,7 +21,8 @@ import { EditFilled } from "@ant-design/icons";
 import { Avatar } from "@nextui-org/avatar";
 import { Select, SelectItem } from "@nextui-org/select";
 import type { TableColumnsType } from "antd";
-import { Table } from "antd";
+import { Badge, Popover, Table } from "antd";
+import moment from "moment";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -286,43 +290,44 @@ export default function Page() {
     }
   }, [orderData]);
 
-  const expandedRowRender = (order: TOrder) => {
-    const productInfo: TSubTableContent[] =
-      order?.OrderItem?.map((item: TOrderItem) => ({
-        key: item?.id,
-        quantity: item?.quantity,
-        productTitle: item?.Product?.title || "Unknown Title",
-        productImage: item?.Product?.img[0] as string,
-        productId: item?.Product?.id!,
-      })) || [];
+  // If expanded column need use it
+  // const expandedRowRender = (order: TOrder) => {
+  //   const productInfo: TSubTableContent[] =
+  //     order?.OrderItem?.map((item: TOrderItem) => ({
+  //       key: item?.id,
+  //       quantity: item?.quantity,
+  //       productTitle: item?.Product?.title || "Unknown Title",
+  //       productImage: item?.Product?.img[0] as string,
+  //       productId: item?.Product?.id!,
+  //     })) || [];
 
-    return (
-      <Table<TSubTableContent>
-        columns={expandColumns}
-        dataSource={productInfo}
-        pagination={false}
-        size="small"
-      />
-    );
-  };
+  //   return (
+  //     <Table<TSubTableContent>
+  //       columns={expandColumns}
+  //       dataSource={productInfo}
+  //       pagination={false}
+  //       size="small"
+  //     />
+  //   );
+  // };
 
-  const expandColumns: TableColumnsType<TSubTableContent> = [
-    {
-      title: "Product Info",
-      key: "product",
-      render: (data: TSubTableContent) => (
-        <Link
-          className="flex min-w-fit space-x-3 items-center text-black hover:text-blue-600 hover:underline w-fit "
-          href={`/products/${data?.productId}`}
-        >
-          <Avatar src={data?.productImage} size="sm" />
-          <h4 className="min-w-40">{data?.productTitle}</h4>
-        </Link>
-      ),
-      width: "1%",
-    },
-    { title: "Quantity", dataIndex: "quantity", key: "productQuantity" },
-  ];
+  // const expandColumns: TableColumnsType<TSubTableContent> = [
+  //   {
+  //     title: "Product Info",
+  //     key: "product",
+  //     render: (data: TSubTableContent) => (
+  //       <Link
+  //         className="flex min-w-fit space-x-3 items-center text-black hover:text-blue-600 hover:underline w-fit "
+  //         href={`/products/${data?.productId}`}
+  //       >
+  //         <Avatar src={data?.productImage} size="sm" />
+  //         <h4 className="min-w-40">{data?.productTitle}</h4>
+  //       </Link>
+  //     ),
+  //     width: "1%",
+  //   },
+  //   { title: "Quantity", dataIndex: "quantity", key: "productQuantity" },
+  // ];
 
   const columns: TableColumnsType<TTableContent> = [
     {
@@ -337,9 +342,14 @@ export default function Page() {
     },
     {
       title: "Status",
-      dataIndex: "status",
       key: "status",
-      render: (status) => <p>{onlyFirstCharacterCapitalize(status)}</p>,
+      render: (data: TOrder) => (
+        <Badge
+          color={getStatusColor(data?.status)}
+          text={data?.status}
+          className="min-w-24"
+        />
+      ),
     },
     {
       title: "Payment Status",
@@ -351,6 +361,52 @@ export default function Page() {
       title: "Total Price",
       dataIndex: "totalPrice",
       key: "totalPrice",
+    },
+    {
+      title: "TSX ID",
+      key: "transaction Id",
+      render: (data: TTableContent) => {
+        const tsxId = data?.Payment?.transactionId!;
+        return (
+          <>
+            {data?.paymentStatus === "PAID" ? (
+              <PopOverContent str={tsxId} length={12} />
+            ) : (
+              <p>Not Found</p>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      title: "Payment Time",
+      key: "updatedAt",
+      render: (data: TTableContent) => {
+        const time = moment(data?.updatedAt).format("lll");
+        return (
+          <>
+            {data?.paymentStatus === "PAID" ? (
+              <PopOverContent str={time} length={13} isThreeDotNeeded={false} />
+            ) : (
+              <p>Not Found</p>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      title: <p className="text-center min-w-32">Products</p>,
+      key: "updatedAt",
+      render: (data: TTableContent) => {
+        return (
+          <OrderedProductsModal
+            orderItems={data?.OrderItem}
+            orderStatus={data?.status}
+            isCustomerTable={false}
+          />
+        );
+      },
+      width: "1%",
     },
     {
       title: "Action",
@@ -430,9 +486,9 @@ export default function Page() {
         </div>
         <Table<TTableContent>
           columns={columns}
-          expandable={{
-            expandedRowRender: (record) => expandedRowRender(record),
-          }}
+          // expandable={{
+          //   expandedRowRender: (record) => expandedRowRender(record),
+          // }}
           dataSource={data}
           pagination={false}
           size="small"

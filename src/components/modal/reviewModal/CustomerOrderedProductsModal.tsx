@@ -1,24 +1,26 @@
 "use client";
 
 import { TOrderItem, TOrderStatus } from "@/src/types";
+import { Avatar } from "@nextui-org/avatar";
 import { LayoutGrid } from "lucide-react";
+import moment from "moment";
+import Link from "next/link";
 import { useState } from "react";
 import NoDataFound from "../../shared/smallComponents/NoDataFound";
 import ModalContainer from "../ModalContainer";
-import { Avatar } from "@nextui-org/avatar";
-import moment from "moment";
-import Link from "next/link";
-import OdButton from "../../UI/button/OdButton";
-import { Tooltip } from "@nextui-org/tooltip";
 import CreateReviewModal from "./CreateReviewModal";
 
-export default function CustomerOrderedProductsModal({
-  orderItems,
-  orderStatus,
-}: {
+type TProps = {
   orderItems: TOrderItem[] | undefined;
   orderStatus: TOrderStatus;
-}) {
+  isCustomerTable?: boolean;
+};
+
+export default function OrderedProductsModal({
+  orderItems,
+  orderStatus,
+  isCustomerTable = true,
+}: TProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const editButton = (
@@ -78,24 +80,26 @@ export default function CustomerOrderedProductsModal({
                   </div>
                 </Link>
 
-                <div className="min-w-0">
-                  {orderStatus === "DELIVERED" ? (
-                    // orderData?.Order?._count?.Review === 0 ? (
-                    orderData?.Order?.Review?.find(
-                      (item) => item.productId !== orderData?.productId
-                    ) || orderData?.Order?._count?.Review === 0 ? (
-                      <CreateReviewModal
-                        orderId={orderData?.orderId}
-                        productId={orderData?.productId}
-                        setPrevModalOpen={setModalOpen}
-                      />
+                {isCustomerTable && (
+                  <div className="min-w-0">
+                    {orderStatus === "DELIVERED" ? (
+                      // orderData?.Order?._count?.Review === 0 ? (
+                      orderData?.Order?.Review?.find(
+                        (item) => item.productId !== orderData?.productId
+                      ) || orderData?.Order?._count?.Review === 0 ? (
+                        <CreateReviewModal
+                          orderId={orderData?.orderId}
+                          productId={orderData?.productId}
+                          setPrevModalOpen={setModalOpen}
+                        />
+                      ) : (
+                        <p className="mr-4 text-sm">Review Done</p>
+                      )
                     ) : (
-                      <p className="mr-4 text-sm">Review Done</p>
-                    )
-                  ) : (
-                    <></>
-                  )}
-                </div>
+                      <></>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -103,7 +107,7 @@ export default function CustomerOrderedProductsModal({
             <p className="text-sm text-gray-600">
               Order Date:
               <strong className="ml-2">
-                {moment(orderItems[0]?.createdAt).format(
+                {moment(orderItems[0]?.updatedAt).format(
                   "MMMM Do YYYY, h:mm:ss a"
                 )}
               </strong>

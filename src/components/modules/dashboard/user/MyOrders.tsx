@@ -1,8 +1,9 @@
 "use client";
 
-import CustomerOrderedProductsModal from "@/src/components/modal/reviewModal/CustomerOrderedProductsModal";
+import OrderedProductsModal from "@/src/components/modal/reviewModal/CustomerOrderedProductsModal";
 import PriceOrganize from "@/src/components/shared/smallComponents/PriceOrganize";
-import { TOrder, TOrderStatus } from "@/src/types";
+import { TOrder } from "@/src/types";
+import { getStatusColor } from "@/src/utils/utils";
 import { Tooltip } from "@nextui-org/tooltip";
 import type { TableColumnsType } from "antd";
 import { Avatar, Badge, Table } from "antd";
@@ -12,29 +13,6 @@ import React from "react";
 // Add missing properties to DataType for type compatibility
 type TOrderTableData = TOrder & {
   key: React.Key;
-};
-
-// type ExpandedDataType = {
-//   idx: number;
-//   key: React.Key;
-//   productImg: string;
-//   productTitle: string;
-//   productQuantity: number;
-// };
-
-const getStatusColor = (status: TOrderStatus) => {
-  switch (status) {
-    case "PENDING":
-      return "orange";
-    case "PROCESSING":
-      return "blue";
-    case "DELIVERED":
-      return "green";
-    case "CANCELLED":
-      return "red";
-    default:
-      return "gray";
-  }
 };
 
 // const expandColumns: TableColumnsType<ExpandedDataType> = [
@@ -176,7 +154,7 @@ export default function MyOrders({ orderData }: { orderData: TOrder[] }) {
       key: "updatedAt",
       render: (data: TOrderTableData) => {
         return (
-          <CustomerOrderedProductsModal
+          <OrderedProductsModal
             orderItems={data?.OrderItem}
             orderStatus={data?.status}
           />
